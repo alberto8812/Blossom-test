@@ -10,7 +10,9 @@ interface EnvConfig {
     DB_USERNAME: string;
     DB_PASSWORD: string;
     DB_NAME: string;
-    API_URL: string
+    API_URL: string;
+    REDIS_HOST: string;
+    REDIS_PORT: number;
 
 }
 
@@ -22,6 +24,8 @@ const ensSchema = joi.object({
     DB_PASSWORD: joi.string().required(),
     DB_NAME: joi.string().required(),
     API_URL: joi.string().required(),
+    REDIS_HOST: joi.string().default('localhost'),
+    REDIS_PORT: joi.number().default(6379),
 })
     .unknown(true) // allow other keys
 
@@ -40,6 +44,8 @@ export const envs = {
     username: envVars.DB_USERNAME,
     password: envVars.DB_PASSWORD,
     database: envVars.DB_NAME,
-    apiUrl: envVars.API_URL
+    apiUrl: envVars.API_URL,
+    redisHost: envVars.REDIS_HOST,
+    redisPort: envVars.REDIS_PORT,
 
 }
