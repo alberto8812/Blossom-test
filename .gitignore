@@ -1,0 +1,72 @@
+# Node modules
+node_modules/
+**/node_modules/
+
+# Backend - compiled output
+rickand-morty-back/dist/
+rickand-morty-back/build/
+
+# Frontend - compiled output
+RickandMorty/dist/
+RickandMorty/dist-ssr/
+
+# Environment variables
+.env
+.env.development.local
+.env.test.local
+.env.production.local
+.env.local
+**/.env
+**/.env.local
+
+# Logs
+logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# OS
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Tests
+/coverage
+/.nyc_output
+
+# IDEs and editors
+/.idea
+.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# Temp directories
+.temp
+.tmp
+*.local
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Diagnostic reports
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
