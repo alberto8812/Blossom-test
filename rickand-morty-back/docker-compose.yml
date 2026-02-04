@@ -1,0 +1,36 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: rickandmorty-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: Blossom
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: Blossom
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: rickandmorty-app
+    restart: unless-stopped
+    ports:
+      - '3000:3000'
+    environment:
+      PORT: 3000
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USERNAME: Blossom
+      DB_PASSWORD: 123456
+      DB_NAME: Blossom
+      DATABASE_URL: postgresql://Blossom:123456@db:5432/Blossom?schema=public
+      API_URL: https://rickandmortyapi.com/api
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:
