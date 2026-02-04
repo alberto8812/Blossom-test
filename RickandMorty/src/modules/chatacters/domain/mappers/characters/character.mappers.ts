@@ -7,6 +7,6 @@ export const characterMappers = (character: CharacterRaw): CharacterDB => {
         status: character.status,
         img: character.img,
         origin: character.origin?.name ?? '',
-        specie: character.specie?.name ?? '',
+        species: character.species?.name ?? '',
     }
 }

@@ -6,7 +6,7 @@ export interface CharacterRaw {
     status: string;
     img: string;
     origin: { name: string };
-    specie: { name: string };
+    species: { name: string };
 }
 
 export interface ResponseCharacter {
@@ -19,7 +19,7 @@ export interface ResponseCharacterId {
 export interface CharacterDB {
     id: string;
     name: string;
-    specie: string;
+    species: string;
     img: string;
     status: string;
     origin: string;
