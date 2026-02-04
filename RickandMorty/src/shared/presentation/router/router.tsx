@@ -1,6 +1,8 @@
 import { createBrowserRouter } from "react-router-dom";
 import { PageError } from "../handkeErrors/PageError";
 import { Root } from "./Root";
+import { DashboardLayout } from "../layouts/DashBoardLayout";
+import { CharacterPage } from "../../../modules/chatacters/Character.page";
 
 export const router = createBrowserRouter([
   {
@@ -14,7 +16,7 @@ export const router = createBrowserRouter([
         children: [
           {
             path: "characters/:id",
-            element: <CharacterPages />,
+            element: <CharacterPage />,
           },
           {
             path: "bears",
