@@ -3,6 +3,9 @@ import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { join } from 'path';
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
+import { DatabaseModule } from './shared/database/database.module';
+import { CharacterModule } from './character/character.module';
+
 @Module({
   imports: [
     GraphQLModule.forRoot<ApolloDriverConfig>({
@@ -13,8 +16,10 @@ import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin
         ApolloServerPluginLandingPageLocalDefault()
       ]
     }),
+    DatabaseModule,
+    CharacterModule,
   ],
   controllers: [],
   providers: [],
 })
-export class AppModule { }
+export class AppModule {}
