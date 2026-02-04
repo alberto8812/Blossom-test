@@ -19,6 +19,7 @@ model Character {
   status    String
   originId  String    @map("origin_id")
   speciesId String    @map("species_id")
+  img       String?
   comment   String?
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @updatedAt @map("updated_at")

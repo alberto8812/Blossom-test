@@ -15,5 +15,8 @@ export class CreateCharacterInput {
   speciesId: string;
 
   @Field(() => String, { nullable: true, defaultValue: null })
+  img: string | null;
+
+  @Field(() => String, { nullable: true, defaultValue: null })
   comment: string | null;
 }

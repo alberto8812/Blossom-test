@@ -1,4 +1,6 @@
 import { ObjectType, Field } from '@nestjs/graphql';
+import { Origin } from '../../../origin/domain/model/origin.model';
+import { Gender } from '../../../gender/domain/model/gender.model';
 
 @ObjectType()
 export class Character {
@@ -18,6 +20,9 @@ export class Character {
   speciesId: string;
 
   @Field(() => String, { nullable: true })
+  img: string | null;
+
+  @Field(() => String, { nullable: true })
   comment: string | null;
 
   @Field()
@@ -28,4 +33,10 @@ export class Character {
 
   @Field(() => Date, { nullable: true })
   deletedAt: Date | null;
+
+  @Field(() => Origin, { nullable: true })
+  origin?: Origin;
+
+  @Field(() => Gender, { nullable: true })
+  species?: Gender;
 }
