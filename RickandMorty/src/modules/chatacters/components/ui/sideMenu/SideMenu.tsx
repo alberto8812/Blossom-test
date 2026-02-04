@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useSelectPetitionModule } from "../../../../../shared/presentation/hooks/use-SelectPetition-module";
 import { getAllCharacters } from "../../../api/get-all-characters";
 import { useState } from "react";
@@ -7,17 +7,30 @@ import { FaArrowLeftLong } from "react-icons/fa6";
 import { IoIosCloseCircleOutline } from "react-icons/io";
 import { SearchSideMenu } from "../../../../../components/SearchSideMenu";
 import { Squeleton } from "../Squeleton";
+import { Accordion } from "../../../../../components/Accordion";
+import { useFavoritesCharacterStore } from "../../../../../shared/presentation/store";
+import type { CharacterDB } from "../../../domain/entity/character.interface.db";
+import { ProfileCard } from "../cards/ProfileCard";
 
 export const SideMenu = () => {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenFilter, setIsOpenFilter] = useState(false);
-  const { data, isLoading } = useSelectPetitionModule("GET_ALL_CHARACTER", {
-    findAll: async () => {
-      const characters = await getAllCharacters();
-      return { data: characters };
+  const { data: characters, isLoading } = useSelectPetitionModule(
+    "GET_ALL_CHARACTER",
+    {
+      findAll: async () => {
+        const characters = await getAllCharacters();
+        return { data: characters };
+      },
     },
-  });
+  );
+  const favoritesCharacter = useFavoritesCharacterStore(
+    (state) => state.favorites,
+  );
+  const favoritesCountCharacter = useFavoritesCharacterStore(
+    (state) => state.countFavorites,
+  );
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -64,55 +77,56 @@ export const SideMenu = () => {
           {isLoading ? (
             <Squeleton />
           ) : (
-            <></>
-            // <div className="space-y-7 pt-5 flex flex-col">
-            //   <Accordion
-            //     title={`STARRED CHARCTERS (${favoritesCountCharacter})`}
-            //   >
-            //     {favoritesCharacter?.map((item: CharacterEntity) => (
-            //       <NavLink
-            //         to={`/dashboard/characters/${item.id}`}
-            //         key={item.id}
-            //       >
-            //         <ProfileCard
-            //           id={item.id}
-            //           name={item.name}
-            //           species={item.specie}
-            //           img={item.img}
-            //           favorite={true}
-            //         />
-            //       </NavLink>
-            //     ))}
-            //   </Accordion>
-            //   <Accordion
-            //     title={`CHARCTERS (${
-            //       (characters?.length ?? 0) - favoritesCountCharacter < 0
-            //         ? 0
-            //         : (characters?.length ?? 0) - favoritesCountCharacter
-            //     })`}
-            //     style="max-h-96"
-            //     initalState={true}
-            //   >
-            //     {characters?.map((item: CharacterEntity) => {
-            //       if (favoritesCharacter?.find((fav) => fav.id === item.id)) {
-            //         return null;
-            //       }
-            //       return (
-            //         <NavLink
-            //           to={`/dashboard/characters/${item.id}`}
-            //           key={item.id}
-            //         >
-            //           <ProfileCard
-            //             id={item.id}
-            //             name={item.name}
-            //             species={item.specie}
-            //             img={item.img}
-            //           />
-            //         </NavLink>
-            //       );
-            //     })}
-            //   </Accordion>
-            // </div>
+            <div className="space-y-7 pt-5 flex flex-col">
+              <Accordion
+                title={`STARRED CHARCTERS (${favoritesCountCharacter})`}
+              >
+                {favoritesCharacter?.map((item: CharacterDB) => (
+                  <NavLink
+                    to={`/dashboard/characters/${item.id}`}
+                    key={item.id}
+                  >
+                    <ProfileCard
+                      id={item.id}
+                      name={item.name}
+                      species={item.species}
+                      img={item.img}
+                      favorite={true}
+                    />
+                  </NavLink>
+                ))}
+              </Accordion>
+              <Accordion
+                title={`CHARCTERS (${
+                  (characters?.data?.length ?? 0) - favoritesCountCharacter < 0
+                    ? 0
+                    : (characters?.data?.length ?? 0) - favoritesCountCharacter
+                })`}
+                style="max-h-96"
+                initalState={true}
+              >
+                {characters?.data?.map((item: CharacterDB) => {
+                  if (favoritesCharacter?.find((fav) => fav.id === item.id)) {
+                    return null;
+                  }
+                  return (
+                    <NavLink
+                      to={`/dashboard/characters/${item.id}`}
+                      key={item.id}
+                    >
+                      <ProfileCard
+                        id={item.id}
+                        name={item.name}
+                        species={item.species}
+                        img={item.img}
+                        status={item.status}
+                        origin={item.origin}
+                      />
+                    </NavLink>
+                  );
+                })}
+              </Accordion>
+            </div>
           )}
         </div>
       </div>
