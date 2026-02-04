@@ -15,6 +15,10 @@ export const router = createBrowserRouter([
         element: <DashboardLayout />,
         children: [
           {
+            path: "",
+            element: <CharacterPage />,
+          },
+          {
             path: "characters/:id",
             element: <CharacterPage />,
           },
