@@ -23,11 +23,11 @@ export const router = createBrowserRouter([
                 path: "",
                 element: <CharacterPage />,
               },
+              {
+                path: "characters/:id",
+                element: <CharacterPage />,
+              },
             ],
-          },
-          {
-            path: "characters/:id",
-            element: <CharacterPage />,
           },
           {
             path: "bears",

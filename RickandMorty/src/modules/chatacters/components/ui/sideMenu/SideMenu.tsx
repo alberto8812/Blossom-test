@@ -1,21 +1,32 @@
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate, useParams } from "react-router-dom";
 import { useSelectPetitionModule } from "../../../../../shared/presentation/hooks/use-SelectPetition-module";
 import { getAllCharacters } from "../../../api/get-all-characters";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { IoIosCloseCircleOutline } from "react-icons/io";
+import { IoArrowBack } from "react-icons/io5";
 import { SearchSideMenu } from "../../../../../components/SearchSideMenu";
 import { Squeleton } from "../Squeleton";
 import { Accordion } from "../../../../../components/Accordion";
 import { useFavoritesCharacterStore } from "../../../../../shared/presentation/store";
 import type { CharacterDB } from "../../../domain/entity/character.interface.db";
 import { ProfileCard } from "../cards/ProfileCard";
+import {
+  ModalFilterSidebar,
+  defaultFilters,
+  getActiveFilterCount,
+  type FilterState,
+} from "./ModalFilterSidebar";
 
 export const SideMenu = () => {
   const navigate = useNavigate();
+  const { id: activeId } = useParams();
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenFilter, setIsOpenFilter] = useState(false);
+  const [filters, setFilters] = useState<FilterState>(defaultFilters);
+  const [isAdvancedSearch, setIsAdvancedSearch] = useState(false);
+
   const { data: characters, isLoading } = useSelectPetitionModule(
     "GET_ALL_CHARACTER",
     {
@@ -31,88 +42,230 @@ export const SideMenu = () => {
   const favoritesCountCharacter = useFavoritesCharacterStore(
     (state) => state.countFavorites,
   );
+
+  const activeFilterCount = getActiveFilterCount(filters);
+
+  // Apply filters to characters
+  const filteredCharacters = useMemo(() => {
+    if (!characters?.data) return [];
+    let result = characters.data as CharacterDB[];
+
+    // Specie filter
+    if (filters.specie !== "all") {
+      result = result.filter(
+        (c) => c.species.toLowerCase() === filters.specie.toLowerCase(),
+      );
+    }
+
+    return result;
+  }, [characters?.data, filters.specie]);
+
+  // Split into favorites and non-favorites, then apply character filter
+  const displayFavorites = useMemo(() => {
+    if (filters.character === "others") return [];
+    return favoritesCharacter.filter((fav) => {
+      if (filters.specie !== "all") {
+        return fav.species.toLowerCase() === filters.specie.toLowerCase();
+      }
+      return true;
+    });
+  }, [favoritesCharacter, filters]);
+
+  const displayCharacters = useMemo(() => {
+    if (filters.character === "starred") return [];
+    return filteredCharacters.filter(
+      (c) => !favoritesCharacter.find((fav) => fav.id === c.id),
+    );
+  }, [filteredCharacters, favoritesCharacter, filters.character]);
+
+  const totalResults = displayFavorites.length + displayCharacters.length;
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
+
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
   };
-  const handleFilterModal = (isOpenFilter: boolean) => {
-    setIsOpenFilter(isOpenFilter);
+
+  const handleOpenFilter = () => {
+    setIsOpenFilter(true);
   };
+
+  const handleCloseFilter = () => {
+    setIsOpenFilter(false);
+  };
+
+  const handleApplyFilters = (newFilters: FilterState) => {
+    setFilters(newFilters);
+    const count = getActiveFilterCount(newFilters);
+    if (count > 0) {
+      setIsAdvancedSearch(true);
+    }
+  };
+
+  const handleDoneAdvancedSearch = () => {
+    setIsAdvancedSearch(false);
+    setFilters(defaultFilters);
+  };
+
   return (
-    <div className="flex ">
+    <div className="flex">
+      {/* Mobile toggle button */}
       <button
         onClick={toggleSidebar}
         className={`${
           isOpen ? "hidden" : "block"
-        } p-4 text-primary-Primary_700 text-lg lg:hidden shadow-none border-none hover:bg-gray-100 pt-5 absolute`}
+        } p-4 text-[var(--accent)] lg:hidden absolute z-10`}
       >
-        <FaArrowLeftLong className="fas fa-bars" size={30} />
+        <FaArrowLeftLong size={24} />
       </button>
-      <div
+
+      <aside
         className={`${
           isOpen ? "block" : "hidden"
-        } lg:block bg-gray-100 lg:w-96  w-screen  h-screen xs:fixed rounded-none border-none`}
+        } lg:block w-screen lg:w-[360px] h-screen xs:fixed border-r shrink-0`}
+        style={{
+          backgroundColor: "var(--surface-sidebar)",
+          borderColor: "var(--border-light)",
+        }}
       >
-        <div className="p-4 space-y-4 pt-5 relative">
+        <div className="p-5 space-y-5 h-full flex flex-col">
+          {/* Mobile close button */}
           <div
             onClick={toggleSidebar}
             className={`${
               isOpen ? "block" : "hidden"
-            } text-primary-Primary_700 flex justify-end`}
+            } lg:hidden text-[var(--accent)] flex justify-end cursor-pointer`}
           >
-            <IoIosCloseCircleOutline className="fas fa-bars" size={30} />
+            <IoIosCloseCircleOutline size={24} />
           </div>
-          <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-bold">Rick and Morty list</h1>
-          </div>
-          <SearchSideMenu
-            handleFilterModal={handleFilterModal}
-            isOpenFilter={isOpenFilter}
-          />
-          {/* {isOpenFilter && (
-            <ModalFilterSidebar origins={origins ?? []} gender={gender ?? []} />
-          )} */}
+
+          {/* Header: normal or advanced search mode */}
+          {isAdvancedSearch ? (
+            <div>
+              <div className="flex items-center justify-between">
+                <button
+                  onClick={handleDoneAdvancedSearch}
+                  className="text-[var(--accent)] lg:hidden"
+                >
+                  <IoArrowBack size={20} />
+                </button>
+                <span
+                  className="text-base font-semibold"
+                  style={{ color: "var(--text-primary)" }}
+                >
+                  Advanced search
+                </span>
+                <button
+                  onClick={handleDoneAdvancedSearch}
+                  className="text-sm font-medium text-[var(--accent)]"
+                >
+                  Done
+                </button>
+              </div>
+              <div className="flex items-center justify-between mt-3">
+                <span
+                  className="text-sm font-semibold text-[var(--accent)]"
+                >
+                  {totalResults} Results
+                </span>
+                {activeFilterCount > 0 && (
+                  <span
+                    className="text-xs font-medium px-2.5 py-1 rounded-md"
+                    style={{
+                      color: "var(--accent)",
+                      backgroundColor: "var(--accent-light)",
+                    }}
+                  >
+                    {activeFilterCount} Filter{activeFilterCount > 1 ? "s" : ""}
+                  </span>
+                )}
+              </div>
+            </div>
+          ) : (
+            <h1
+              className="text-xl font-bold"
+              style={{ color: "var(--text-primary)" }}
+            >
+              Rick and Morty list
+            </h1>
+          )}
+
+          {/* Search bar with filter toggle */}
+          {!isAdvancedSearch && (
+            <div className="relative">
+              <SearchSideMenu
+                handleFilterModal={handleOpenFilter}
+                isOpenFilter={isOpenFilter}
+              />
+              {/* Desktop filter dropdown */}
+              {isOpenFilter && (
+                <div className="hidden lg:block">
+                  <ModalFilterSidebar
+                    onClose={handleCloseFilter}
+                    onApply={handleApplyFilters}
+                    currentFilters={filters}
+                    isMobile={false}
+                  />
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Mobile full-screen filter */}
+          {isOpenFilter && (
+            <div className="lg:hidden">
+              <ModalFilterSidebar
+                onClose={handleCloseFilter}
+                onApply={handleApplyFilters}
+                currentFilters={filters}
+                isMobile={true}
+              />
+            </div>
+          )}
+
+          {/* Character lists */}
           {isLoading ? (
             <Squeleton />
           ) : (
-            <div className="space-y-7 pt-5 flex flex-col">
-              <Accordion
-                title={`STARRED CHARCTERS (${favoritesCountCharacter})`}
-              >
-                {favoritesCharacter?.map((item: CharacterDB) => (
-                  <NavLink
-                    to={`/dashboard/characters/${item.id}`}
-                    key={item.id}
-                  >
-                    <ProfileCard
-                      id={item.id}
-                      name={item.name}
-                      species={item.species}
-                      img={item.img}
-                      favorite={true}
-                    />
-                  </NavLink>
-                ))}
-              </Accordion>
-              <Accordion
-                title={`CHARCTERS (${
-                  (characters?.data?.length ?? 0) - favoritesCountCharacter < 0
-                    ? 0
-                    : (characters?.data?.length ?? 0) - favoritesCountCharacter
-                })`}
-                style="max-h-96"
-                initalState={true}
-              >
-                {characters?.data?.map((item: CharacterDB) => {
-                  if (favoritesCharacter?.find((fav) => fav.id === item.id)) {
-                    return null;
-                  }
-                  return (
+            <div className="flex-1 overflow-y-auto space-y-4">
+              {(filters.character === "all" ||
+                filters.character === "starred") && (
+                <Accordion
+                  title={`STARRED CHARACTERS (${displayFavorites.length})`}
+                >
+                  {displayFavorites.map((item: CharacterDB) => (
                     <NavLink
                       to={`/dashboard/characters/${item.id}`}
                       key={item.id}
+                      className="block"
+                    >
+                      <ProfileCard
+                        id={item.id}
+                        name={item.name}
+                        species={item.species}
+                        img={item.img}
+                        favorite={true}
+                        isActive={activeId === item.id}
+                      />
+                    </NavLink>
+                  ))}
+                </Accordion>
+              )}
+
+              {(filters.character === "all" ||
+                filters.character === "others") && (
+                <Accordion
+                  title={`CHARACTERS (${displayCharacters.length})`}
+                  style="max-h-[calc(100vh-400px)]"
+                  initalState={true}
+                >
+                  {displayCharacters.map((item: CharacterDB) => (
+                    <NavLink
+                      to={`/dashboard/characters/${item.id}`}
+                      key={item.id}
+                      className="block"
                     >
                       <ProfileCard
                         id={item.id}
@@ -121,15 +274,16 @@ export const SideMenu = () => {
                         img={item.img}
                         status={item.status}
                         origin={item.origin}
+                        isActive={activeId === item.id}
                       />
                     </NavLink>
-                  );
-                })}
-              </Accordion>
+                  ))}
+                </Accordion>
+              )}
             </div>
           )}
         </div>
-      </div>
+      </aside>
     </div>
   );
 };
