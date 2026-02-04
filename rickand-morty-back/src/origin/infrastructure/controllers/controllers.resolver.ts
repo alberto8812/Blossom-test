@@ -1,4 +1,7 @@
 import { Resolver } from '@nestjs/graphql';
 
 @Resolver()
-export class ControllersResolver {}
+export class ControllersResolver {
+    constructor() { }
+
+}

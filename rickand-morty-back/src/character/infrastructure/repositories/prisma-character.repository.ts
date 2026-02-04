@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/shared/database/prisma-manager.service';
-import { ICharacterRepository } from '../../domain/repository/character.repository.interface';
+import { ICharacterRepository, IResponse } from '../../domain/repository/character.repository.interface';
 import { Character } from '../../domain/model/character.model';
 import { SearchFilterCharacter } from '../../application/interfaces/search-filter-character.interface';
 
@@ -11,46 +11,76 @@ const includeRelations = {
 
 @Injectable()
 export class PrismaCharacterRepository implements ICharacterRepository {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
-  async findAll(): Promise<Character[]> {
-    return this.prisma.character.findMany({
+  async findAll(): Promise<IResponse<Character[]>> {
+    const data = await this.prisma.character.findMany({
       where: { deletedAt: null },
       include: includeRelations,
     });
+
+    return {
+      message: 'Characters retrieved successfully',
+      code: 200,
+      data,
+    };
   }
 
-  async findById(id: string): Promise<Character | null> {
-    return this.prisma.character.findFirst({
+  async findById(id: string): Promise<IResponse<Character | null>> {
+    const data = await this.prisma.character.findFirst({
       where: { id, deletedAt: null },
       include: includeRelations,
     });
+
+    return {
+      message: 'Character retrieved successfully',
+      code: 200,
+      data,
+    };
   }
 
-  async create(data: Omit<Character, 'id' | 'createdAt' | 'updatedAt' | 'deletedAt' | 'origin' | 'species'>): Promise<Character> {
-    return this.prisma.character.create({
+  async create(data: Omit<Character, 'id' | 'createdAt' | 'updatedAt' | 'deletedAt' | 'origin' | 'species'>): Promise<IResponse<Character>> {
+    const createdCharacter = await this.prisma.character.create({
       data,
       include: includeRelations,
     });
+
+    return {
+      message: 'Character created successfully',
+      code: 201,
+      data: createdCharacter,
+    };
   }
 
-  async update(id: string, data: Partial<Omit<Character, 'id' | 'createdAt' | 'updatedAt' | 'deletedAt' | 'origin' | 'species'>>): Promise<Character> {
-    return this.prisma.character.update({
+  async update(id: string, data: Partial<Omit<Character, 'id' | 'createdAt' | 'updatedAt' | 'deletedAt' | 'origin' | 'species'>>): Promise<IResponse<Character>> {
+    const updatedCharacter = await this.prisma.character.update({
       where: { id },
       data,
       include: includeRelations,
     });
+
+    return {
+      message: 'Character updated successfully',
+      code: 200,
+      data: updatedCharacter,
+    };
   }
 
-  async softDelete(id: string): Promise<Character> {
-    return this.prisma.character.update({
+  async softDelete(id: string): Promise<IResponse<Character>> {
+    const updatedCharacter = await this.prisma.character.update({
       where: { id },
       data: { deletedAt: new Date() },
       include: includeRelations,
     });
+
+    return {
+      message: 'Character soft deleted successfully',
+      code: 200,
+      data: updatedCharacter,
+    };
   }
 
-  async search(filters: SearchFilterCharacter): Promise<Character[]> {
+  async search(filters: SearchFilterCharacter): Promise<IResponse<Character[]>> {
     const where: any = { deletedAt: null };
 
     if (filters.name) {
@@ -69,9 +99,15 @@ export class PrismaCharacterRepository implements ICharacterRepository {
       where.comment = { contains: filters.comment, mode: 'insensitive' };
     }
 
-    return this.prisma.character.findMany({
+    const data = await this.prisma.character.findMany({
       where,
       include: includeRelations,
     });
+
+    return {
+      message: 'Characters retrieved successfully',
+      code: 200,
+      data,
+    };
   }
 }
