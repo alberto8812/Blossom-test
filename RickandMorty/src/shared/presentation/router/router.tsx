@@ -3,6 +3,7 @@ import { PageError } from "../handkeErrors/PageError";
 import { Root } from "./Root";
 import { DashboardLayout } from "../layouts/DashBoardLayout";
 import { CharacterPage } from "../../../modules/chatacters/Character.page";
+import { DashBoardCharactersLayout } from "../../../modules/chatacters/components/ui/layouts/DashBoardCharactersLayout";
 
 export const router = createBrowserRouter([
   {
@@ -16,7 +17,13 @@ export const router = createBrowserRouter([
         children: [
           {
             path: "",
-            element: <CharacterPage />,
+            element: <DashBoardCharactersLayout />,
+            children: [
+              {
+                path: "",
+                element: <CharacterPage />,
+              },
+            ],
           },
           {
             path: "characters/:id",
