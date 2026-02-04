@@ -14,6 +14,6 @@ export class CreateCharacterInput {
   @Field()
   speciesId: string;
 
-  @Field({ nullable: true })
-  comment?: string;
+  @Field(() => String, { nullable: true, defaultValue: null })
+  comment: string | null;
 }

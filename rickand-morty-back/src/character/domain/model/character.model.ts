@@ -17,7 +17,7 @@ export class Character {
   @Field()
   speciesId: string;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   comment: string | null;
 
   @Field()
@@ -26,6 +26,6 @@ export class Character {
   @Field()
   updatedAt: Date;
 
-  @Field({ nullable: true })
+  @Field(() => Date, { nullable: true })
   deletedAt: Date | null;
 }
