@@ -1,9 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
-
-import { DashboardLayout } from "../layouts/DashBoardLayout";
+import { PageError } from "../handkeErrors/PageError";
 import { Root } from "./Root";
-import { CharacterPages } from "../pages";
-import { PageError } from "../components/erros/PageError";
 
 export const router = createBrowserRouter([
   {
