@@ -1,10 +1,19 @@
 import type { ResponseDetailGeneric, ResponseGeneric } from "../../../../shared/domain/base/response.interface";
 
+export interface CharacterRaw {
+    id: string;
+    name: string;
+    status: string;
+    img: string;
+    origin: { name: string };
+    specie: { name: string };
+}
+
 export interface ResponseCharacter {
-    get_all_character: ResponseGeneric<CharacterDB>;
+    get_all_character: ResponseGeneric<CharacterRaw>;
 }
 export interface ResponseCharacterId {
-    get_one_character: ResponseDetailGeneric<CharacterDB>;
+    get_one_character: ResponseDetailGeneric<CharacterRaw>;
 }
 
 export interface CharacterDB {

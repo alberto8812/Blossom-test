@@ -1,24 +1,12 @@
-import type { CharacterDB } from "../../entity/character.interface.db"
+import type { CharacterDB, CharacterRaw } from "../../entity/character.interface.db"
 
-
-export const characterMappers = (Character: CharacterDB): Partial<CharacterDB> => {
+export const characterMappers = (character: CharacterRaw): CharacterDB => {
     return {
-        name: Character.name,
-        specie: Character.specie,
-        img: Character.img,
-        id: Character.id
-
+        id: character.id,
+        name: character.name,
+        status: character.status,
+        img: character.img,
+        origin: character.origin?.name ?? '',
+        specie: character.specie?.name ?? '',
     }
-
-}
-export const characterDetailMappers = (Character: CharacterDB): CharacterDB => {
-    return {
-        name: Character.name,
-        specie: Character.specie,
-        img: Character.img,
-        status: Character.status,
-        origin: Character.origin,
-        id: Character.id
-    }
-
 }
