@@ -12,3 +12,49 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+model Character {
+  id        String    @id @default(uuid())
+  name      String
+  status    String
+  originId  String    @map("origin_id")
+  speciesId String    @map("species_id")
+  comment   String?
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  origin  Origin @relation(fields: [originId], references: [id])
+  species Gender @relation(fields: [speciesId], references: [id])
+
+  @@index([name])
+  @@index([status])
+  @@index([originId])
+  @@index([speciesId])
+  @@index([deletedAt])
+  @@map("characters")
+}
+
+model Gender {
+  id        String    @id @default(uuid())
+  name      String
+  deletedAt DateTime? @map("deleted_at")
+
+  characters Character[]
+
+  @@index([name])
+  @@index([deletedAt])
+  @@map("genders")
+}
+
+model Origin {
+  id        String    @id @default(uuid())
+  name      String
+  deletedAt DateTime? @map("deleted_at")
+
+  characters Character[]
+
+  @@index([name])
+  @@index([deletedAt])
+  @@map("origins")
+}
