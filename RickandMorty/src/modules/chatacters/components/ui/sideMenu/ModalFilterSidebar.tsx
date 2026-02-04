@@ -1,110 +1,221 @@
-import { useFilterSharestore } from "../../../../../shared/presentation/store";
-import type { SpecieDB } from "../../../../gender/domain/entity/specie.interface";
-import type { OriginDB } from "../../../../origin/domain/entity/origin.interface";
+import { useState } from "react";
+import { IoArrowBack } from "react-icons/io5";
 
 interface Props {
-  origins: OriginDB[];
-  gender: SpecieDB[];
+  onClose: () => void;
+  onApply: (filters: FilterState) => void;
+  currentFilters: FilterState;
+  isMobile: boolean;
 }
 
-export const ModalFilterSidebar = ({ origins, gender }: Props) => {
-  const specieFilter = useFilterSharestore((state) => state.specieFilter);
-  const characterFilter = useFilterSharestore((state) => state.originFilter);
-  const setValidatedFieldFilter = useFilterSharestore(
-    (state) => state.setValidatedFieldFilter,
-  );
-  const setCharacterFilter = useFilterSharestore(
-    (state) => state.setOriginCharacterFilter,
-  );
-  const setSpecieFilter = useFilterSharestore(
-    (state) => state.setSpeciesCharacterFilter,
-  );
+export interface FilterState {
+  character: "all" | "starred" | "others";
+  specie: "all" | "human" | "alien";
+}
 
-  const sendFilter = () => {
-    setValidatedFieldFilter();
+export const defaultFilters: FilterState = {
+  character: "all",
+  specie: "all",
+};
+
+export const getActiveFilterCount = (filters: FilterState): number => {
+  let count = 0;
+  if (filters.character !== "all") count++;
+  if (filters.specie !== "all") count++;
+  return count;
+};
+
+const PillButton = ({
+  label,
+  isActive,
+  onClick,
+}: {
+  label: string;
+  isActive: boolean;
+  onClick: () => void;
+}) => (
+  <button
+    onClick={onClick}
+    className={`px-6 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+      isActive
+        ? "text-[var(--accent)]"
+        : "border text-gray-600 hover:bg-gray-50"
+    }`}
+    style={
+      isActive
+        ? { backgroundColor: "var(--accent-light)" }
+        : { borderColor: "#e5e7eb" }
+    }
+  >
+    {label}
+  </button>
+);
+
+export const ModalFilterSidebar = ({
+  onClose,
+  onApply,
+  currentFilters,
+  isMobile,
+}: Props) => {
+  const [filters, setFilters] = useState<FilterState>(currentFilters);
+
+  const handleApply = () => {
+    onApply(filters);
+    onClose();
   };
 
-  return (
-    <div className=" absolute left-0 right-0 mt-2 bg-white rounded-lg shadow-lg border p-4 z-30">
-      <div className="space-y-6">
-        <div className="space-y-3">
-          <h3 className="text-gray-600 text-sm">origins</h3>
-          <div className="flex justify-evenly flex-wrap align-baseline gap-2">
-            <button
-              onClick={() => setCharacterFilter({ originId: "all" })}
-              className={`px-6 py-2 rounded-lg text-xs ${
-                characterFilter.originId === "all"
-                  ? "bg-primary-Primary_100 text-primary-Primary_700"
-                  : "bg-white border text-gray-700"
-              }`}
-            >
-              All
-            </button>
+  const hasFilters =
+    filters.character !== "all" || filters.specie !== "all";
 
-            {origins?.map((origin) => (
-              <button
-                key={origin.id}
-                onClick={() => setCharacterFilter({ originId: origin.id })}
-                className={`px-6 py-2 rounded-lg text-xs ${
-                  characterFilter.originId === origin.id
-                    ? "bg-primary-Primary_100 text-primary-Primary_700"
-                    : "bg-white border text-gray-700"
-                }`}
-              >
-                {origin?.name?.slice(0, 10)}
-              </button>
-            ))}
+  if (isMobile) {
+    return (
+      <div className="fixed inset-0 z-50 flex flex-col" style={{ backgroundColor: "var(--surface)" }}>
+        <div className="flex items-center px-5 py-4">
+          <button onClick={onClose} className="mr-4 text-[var(--accent)]">
+            <IoArrowBack size={22} />
+          </button>
+          <h2 className="text-lg font-semibold flex-1 text-center pr-10" style={{ color: "var(--text-primary)" }}>
+            Filters
+          </h2>
+        </div>
+
+        <div className="flex-1 px-5 pt-4 space-y-8">
+          <div className="space-y-3">
+            <p className="text-sm font-medium" style={{ color: "var(--text-secondary)" }}>
+              Characters
+            </p>
+            <div className="flex gap-3">
+              <PillButton
+                label="All"
+                isActive={filters.character === "all"}
+                onClick={() => setFilters({ ...filters, character: "all" })}
+              />
+              <PillButton
+                label="Starred"
+                isActive={filters.character === "starred"}
+                onClick={() => setFilters({ ...filters, character: "starred" })}
+              />
+              <PillButton
+                label="Others"
+                isActive={filters.character === "others"}
+                onClick={() => setFilters({ ...filters, character: "others" })}
+              />
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <p className="text-sm font-medium" style={{ color: "var(--text-secondary)" }}>
+              Specie
+            </p>
+            <div className="flex gap-3">
+              <PillButton
+                label="All"
+                isActive={filters.specie === "all"}
+                onClick={() => setFilters({ ...filters, specie: "all" })}
+              />
+              <PillButton
+                label="Human"
+                isActive={filters.specie === "human"}
+                onClick={() => setFilters({ ...filters, specie: "human" })}
+              />
+              <PillButton
+                label="Alien"
+                isActive={filters.specie === "alien"}
+                onClick={() => setFilters({ ...filters, specie: "alien" })}
+              />
+            </div>
           </div>
         </div>
 
-        <div className="space-y-3">
-          <h3 className="text-gray-600 text-sm">Specie</h3>
-          <div className="flex justify-evenly flex-wrap align-baseline gap-2">
-            <button
-              onClick={() => setSpecieFilter({ speciesId: "all" })}
-              className={`px-6 py-2 rounded-lg text-xs ${
-                specieFilter.speciesId === "all"
-                  ? "bg-primary-Primary_100 text-primary-Primary_700"
-                  : "bg-white border text-gray-700"
-              }`}
-            >
-              All
-            </button>
-
-            {gender?.map((specie) => (
-              <button
-                key={specie.id}
-                onClick={() => setSpecieFilter({ speciesId: specie.id })}
-                className={`px-6 py-2 rounded-lg text-xs ${
-                  specieFilter.speciesId === specie.id
-                    ? "bg-primary-Primary_100 text-primary-Primary_700"
-                    : "bg-white border text-gray-700"
-                }`}
-              >
-                {specie?.name?.slice(0, 10)}
-              </button>
-            ))}
-          </div>
+        <div className="px-5 pb-8 pt-4">
+          <button
+            onClick={handleApply}
+            className={`w-full py-3.5 rounded-lg text-sm font-medium transition-colors ${
+              hasFilters
+                ? "text-white"
+                : "text-gray-400 cursor-default"
+            }`}
+            style={{
+              backgroundColor: hasFilters ? "var(--accent)" : "#e5e7eb",
+            }}
+          >
+            Filter
+          </button>
         </div>
-
-        <button
-          onClick={() => sendFilter()}
-          className={`
-            ${
-              Object.keys(characterFilter).length === 0 &&
-              Object.keys(specieFilter).length === 0
-                ? "cursor-not-allowed bg-gray-400"
-                : "bg-primary-Primary_700 hover:bg-purple-700"
-            }
-            w-full  text-white py-3 rounded-lg transition-colors text-xs`}
-          disabled={
-            Object.keys(characterFilter).length === 0 &&
-            Object.keys(specieFilter).length === 0
-          }
-        >
-          Filter
-        </button>
       </div>
+    );
+  }
+
+  // Desktop dropdown
+  return (
+    <div
+      className="absolute left-0 right-0 mt-2 rounded-xl z-30 p-5 space-y-6"
+      style={{
+        backgroundColor: "var(--surface)",
+        boxShadow: "0 4px 24px rgba(0,0,0,0.08)",
+        border: "1px solid var(--border-light)",
+      }}
+    >
+      <div className="space-y-3">
+        <p className="text-sm font-medium" style={{ color: "var(--text-secondary)" }}>
+          Character
+        </p>
+        <div className="flex gap-3">
+          <PillButton
+            label="All"
+            isActive={filters.character === "all"}
+            onClick={() => setFilters({ ...filters, character: "all" })}
+          />
+          <PillButton
+            label="Starred"
+            isActive={filters.character === "starred"}
+            onClick={() => setFilters({ ...filters, character: "starred" })}
+          />
+          <PillButton
+            label="Others"
+            isActive={filters.character === "others"}
+            onClick={() => setFilters({ ...filters, character: "others" })}
+          />
+        </div>
+      </div>
+
+      <div className="space-y-3">
+        <p className="text-sm font-medium" style={{ color: "var(--text-secondary)" }}>
+          Specie
+        </p>
+        <div className="flex gap-3">
+          <PillButton
+            label="All"
+            isActive={filters.specie === "all"}
+            onClick={() => setFilters({ ...filters, specie: "all" })}
+          />
+          <PillButton
+            label="Human"
+            isActive={filters.specie === "human"}
+            onClick={() => setFilters({ ...filters, specie: "human" })}
+          />
+          <PillButton
+            label="Alien"
+            isActive={filters.specie === "alien"}
+            onClick={() => setFilters({ ...filters, specie: "alien" })}
+          />
+        </div>
+      </div>
+
+      <button
+        onClick={handleApply}
+        className={`w-full py-3 rounded-lg text-sm font-medium transition-colors ${
+          hasFilters
+            ? "text-white"
+            : "text-gray-500"
+        }`}
+        style={{
+          backgroundColor: hasFilters ? "var(--accent)" : "#f3f4f6",
+          border: hasFilters ? "none" : "1px solid #e5e7eb",
+        }}
+      >
+        Filter
+      </button>
     </div>
   );
 };
