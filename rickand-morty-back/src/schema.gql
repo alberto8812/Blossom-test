@@ -2,27 +2,35 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type Origin {
+  id: String!
+  name: String!
+}
+
+type Gender {
+  id: String!
+  name: String!
+}
+
 type Character {
   id: String!
   name: String!
   status: String!
   originId: String!
   speciesId: String!
+  img: String
   comment: String
   createdAt: DateTime!
   updatedAt: DateTime!
   deletedAt: DateTime
+  origin: Origin
+  species: Gender
 }
 
 """
 A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
 """
 scalar DateTime
-
-type Gender {
-  id: String!
-  name: String!
-}
 
 type Query {
   characters: [Character!]!
@@ -43,6 +51,9 @@ type Mutation {
   createCharacter(input: CreateCharacterInput!): Character!
   updateCharacter(input: UpdateCharacterInput!): Character!
   deleteCharacter(id: String!): Character!
+
+  """Ejecuta el seed con datos de la API de Rick and Morty"""
+  executeSeed: Boolean!
 }
 
 input CreateCharacterInput {
@@ -50,6 +61,7 @@ input CreateCharacterInput {
   status: String!
   originId: String!
   speciesId: String!
+  img: String = null
   comment: String = null
 }
 
@@ -58,6 +70,7 @@ input UpdateCharacterInput {
   status: String
   originId: String
   speciesId: String
+  img: String = null
   comment: String = null
   id: String!
 }

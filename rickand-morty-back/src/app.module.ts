@@ -8,6 +8,7 @@ import { CacheModule } from './shared/cache/cache.module';
 import { CharacterModule } from './character/character.module';
 import { GenderModule } from './gender/gender.module';
 import { OriginModule } from './origin/origin.module';
+import { SeedModule } from './seed/seed.module';
 
 @Module({
   imports: [
@@ -23,7 +24,8 @@ import { OriginModule } from './origin/origin.module';
     CacheModule,
     CharacterModule,
     GenderModule,
-    OriginModule
+    OriginModule,
+    SeedModule,
   ],
   controllers: [],
   providers: [],

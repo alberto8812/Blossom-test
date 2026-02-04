@@ -2,6 +2,10 @@ import { Module } from '@nestjs/common';
 import { ControllersResolver } from './infrastructure/controllers/controllers.resolver';
 
 @Module({
-  providers: [ControllersResolver]
+  providers: [
+
+    ControllersResolver
+
+  ]
 })
-export class OriginModule {}
+export class OriginModule { }
