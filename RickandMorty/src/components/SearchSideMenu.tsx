@@ -31,27 +31,32 @@ export const SearchSideMenu = ({ handleFilterModal, isOpenFilter }: Props) => {
   };
 
   return (
-    <div className="max-w-md mx-auto">
-      <div className="relative">
-        <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-          <CiSearch className="w-5 h-5 text-gray-400 dark:text-gray-300" />
-        </div>
-        <input
-          type="search"
-          id="default-search"
-          className="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg focus:outline-none  "
-          placeholder="Search or filter results "
-          value={Namefilter}
-          onChange={handleInputSearch}
-        />
-        <button
-          type="submit"
-          className="text-white absolute end-2.5 bottom-2.5 bg-transparent  hover:bg-primary-Primary_100 rounded-lg text-sm px-1 py-2 shadow-none border-none "
-          onClick={() => handleFilterModal(!isOpenFilter)}
-        >
-          <CiSliderVertical className="w-5 h-5 " color="#5A3696" />
-        </button>
+    <div className="relative">
+      <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+        <CiSearch className="w-4 h-4" style={{ color: "var(--text-muted)" }} />
       </div>
+      <input
+        type="search"
+        id="default-search"
+        className="block w-full py-2.5 ps-9 pe-10 text-sm rounded-lg"
+        style={{
+          border: "1px solid var(--border-light)",
+          backgroundColor: "var(--surface)",
+        }}
+        placeholder="Search or filter results"
+        value={Namefilter}
+        onChange={handleInputSearch}
+      />
+      <button
+        type="button"
+        className="absolute end-2 top-1/2 -translate-y-1/2 p-1.5 rounded-md hover:bg-gray-100"
+        onClick={() => handleFilterModal(!isOpenFilter)}
+      >
+        <CiSliderVertical
+          className="w-4 h-4"
+          style={{ color: "var(--accent)" }}
+        />
+      </button>
     </div>
   );
 };

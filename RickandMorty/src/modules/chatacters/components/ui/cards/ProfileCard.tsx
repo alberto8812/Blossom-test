@@ -10,6 +10,7 @@ interface Props {
   favorite?: boolean;
   status?: string;
   origin?: string;
+  isActive?: boolean;
 }
 
 export const ProfileCard = ({
@@ -20,50 +21,65 @@ export const ProfileCard = ({
   favorite = false,
   status = "",
   origin = "",
+  isActive = false,
 }: Props) => {
   const addFavoriteAndremoVe = useFavoritesCharacterStore(
     (state) => state.addFavoriteAndremoVe,
   );
   return (
-    <div className="rounded-lg border-none bg-card text-card-foreground shadow-none mb-1 h-min flex items-center aligh-center max-w-full py-2 px-4">
-      <span className="relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full min-h-[32px] min-w-[32px]">
+    <div
+      className={`flex items-center py-3 px-4 rounded-lg transition-colors duration-150 ${
+        isActive
+          ? "bg-[var(--accent-light)] border-l-[3px] border-l-[var(--accent)]"
+          : "hover:bg-[var(--surface-hover)]"
+      }`}
+    >
+      <span className="relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full">
         <img
-          className="aspect-square h-full w-full"
+          className="aspect-square h-full w-full object-cover"
           src={`${img && img !== "" ? img : "./img/profile.jpg"}`}
-          alt="Profile"
+          alt={name}
         />
       </span>
-      <div className="w-screen ">
-        <p className="text-sm font-extrabold text-zinc-950 leading-[100%] pl-4 md:text-1xl">
+      <div className="flex-1 min-w-0 pl-3">
+        <p
+          className="text-sm font-semibold truncate"
+          style={{ color: "var(--text-primary)" }}
+        >
           {name}
         </p>
-        <p className="text-sm font-medium text-zinc-500  md:mt-2 pl-4 md:text-1xl ">
+        <p
+          className="text-xs mt-0.5 truncate"
+          style={{ color: "var(--text-secondary)" }}
+        >
           {species}
         </p>
       </div>
-      <div className="flex  justify-end items-end w-20  ">
-        <button
-          onClick={() =>
-            addFavoriteAndremoVe({
-              name,
-              species: species,
-              img: `${img && img !== "" ? img : "./img/profile.jpg"}`,
-              id,
-              status,
-              origin,
-            })
-          }
-          className={`flex items-center justify-center h-8 w-8 rounded-full bg-white ${
-            favorite ? "text-secondary-Secondary_600" : "text-gray-300"
-          } hover:bg-primary-Primary_100 shadow-none border-none`}
-        >
-          {favorite ? (
-            <FaHeart className="fas fa-star" size={20} />
-          ) : (
-            <FaRegHeart className="fas fa-star" size={20} />
-          )}
-        </button>
-      </div>
+      <button
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          addFavoriteAndremoVe({
+            name,
+            species: species,
+            img: `${img && img !== "" ? img : "./img/profile.jpg"}`,
+            id,
+            status,
+            origin,
+          });
+        }}
+        className={`flex items-center justify-center h-8 w-8 shrink-0 rounded-full ${
+          favorite
+            ? "text-[var(--accent-heart)]"
+            : "text-gray-300 hover:text-gray-400"
+        } hover:bg-gray-100`}
+      >
+        {favorite ? (
+          <FaHeart size={16} />
+        ) : (
+          <FaRegHeart size={16} />
+        )}
+      </button>
     </div>
   );
 };

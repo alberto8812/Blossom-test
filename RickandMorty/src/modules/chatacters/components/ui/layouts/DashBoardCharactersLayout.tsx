@@ -10,14 +10,11 @@ export const DashBoardCharactersLayout = () => {
         return <PageError />;
       }}
     >
-      <div className="bg-white overflow-y-scroll w-screen h-screen antialiased text-slate-900 selection:bg-blue-900 selection:text-white">
-        <div className="flex flex-row relative w-screen">
-          <SideMenu />
-
-          <div className="w-full p-4">
-            <Outlet />
-          </div>
-        </div>
+      <div className="flex w-screen h-screen" style={{ backgroundColor: "var(--surface)" }}>
+        <SideMenu />
+        <main className="flex-1 overflow-y-auto">
+          <Outlet />
+        </main>
       </div>
     </ErrorBoundary>
   );

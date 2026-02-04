@@ -1,23 +1,40 @@
 @import "tailwindcss";
 @tailwind utilities;
-h1 {
-  @apply text-3xl font-bold text-gray-800;
-}
 
-h2 {
-  @apply text-2xl font-semibold text-gray-800;
-}
-
-hr {
-  @apply my-1 border-gray-300 border mb-3;
-}
-
-button {
-  @apply transition-all  font-semibold uppercase tracking-wide shadow-md;
+:root {
+  --accent: #5A3696;
+  --accent-light: #EDE8F5;
+  --accent-heart: #48BB78;
+  --text-primary: #1a1a2e;
+  --text-secondary: #6b7280;
+  --text-muted: #9ca3af;
+  --border-light: #f0f0f0;
+  --surface: #ffffff;
+  --surface-sidebar: #ffffff;
+  --surface-hover: #f9f8fc;
 }
 
 body {
   @apply bg-white text-gray-800;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1 {
+  @apply text-xl font-bold;
+  color: var(--text-primary);
+}
+
+h2 {
+  @apply text-lg font-semibold;
+  color: var(--text-primary);
+}
+
+hr {
+  border: none;
+  border-top: 1px solid var(--border-light);
+  margin: 0;
 }
 
 input:not(.swal2-input)[type="text"],
@@ -25,6 +42,36 @@ input:not(.swal2-input)[type="password"],
 input:not(.swal2-input)[type="email"],
 input:not(.swal2-input)[type="number"],
 input:not(.swal2-input)[type="date"],
-input:not(.swal2-input)[type="time"] {
-  @apply w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none;
+input:not(.swal2-input)[type="time"],
+input[type="search"] {
+  @apply w-full border rounded-lg py-2.5 px-3 text-sm focus:outline-none;
+  border-color: var(--border-light);
+  color: var(--text-primary);
+}
+
+input[type="search"]::placeholder {
+  color: var(--text-muted);
+}
+
+/* Remove aggressive global button styles */
+button {
+  @apply transition-colors duration-150;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
 }

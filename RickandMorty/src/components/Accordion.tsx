@@ -20,19 +20,31 @@ export const Accordion = ({
   const toggleExpanded = () => setExpanded((current) => !current);
 
   return (
-    <div className="my-2 sm:my-4 md:my-6 shadow-sm cursor-pointer bg-white">
-      <div className="px-6 text-left items-center h-20 select-none flex justify-between flex-row">
-        <h5 className="flex-1">{title}</h5>
-        <div className="flex-none pl-2" onClick={toggleExpanded}>
-          {expanded ? <IoIosArrowUp /> : <IoIosArrowDown />}
+    <div className="cursor-pointer">
+      <div
+        className="flex items-center justify-between py-2 select-none"
+        onClick={toggleExpanded}
+      >
+        <span
+          className="text-xs font-medium tracking-wider"
+          style={{ color: "var(--text-muted)" }}
+        >
+          {title}
+        </span>
+        <div className="pl-2" style={{ color: "var(--text-muted)" }}>
+          {expanded ? (
+            <IoIosArrowUp size={14} />
+          ) : (
+            <IoIosArrowDown size={14} />
+          )}
         </div>
       </div>
       <div
-        className={`px-6 pt-0 overflow-hidden transition-[max-height] duration-500 ease-in overflow-y-auto ${
+        className={`overflow-hidden transition-[max-height] duration-300 ease-in-out overflow-y-auto ${
           expanded ? style : "max-h-0"
         }`}
       >
-        {children}
+        <div className="space-y-0.5">{children}</div>
       </div>
     </div>
   );

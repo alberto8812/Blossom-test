@@ -10,7 +10,7 @@ export const DashboardLayout = () => {
         return <PageError />;
       }}
     >
-      <div className="bg-white overflow-y-scroll w-screen h-screen antialiased text-slate-900 selection:bg-blue-900 selection:text-white">
+      <div className="w-screen h-screen" style={{ backgroundColor: "var(--surface)" }}>
         <Outlet />
       </div>
     </ErrorBoundary>
