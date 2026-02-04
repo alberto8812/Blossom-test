@@ -1,5 +1,6 @@
 import { create } from "zustand"
-import { CharacterFilter, NameFilter } from "../../../domain"
+import type { CharacterFilter } from "../../../domain/base/character.filter.inteface"
+
 
 
 interface FieldFileterShare {

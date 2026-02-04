@@ -1,11 +1,12 @@
 import { create } from "zustand"
-import { CharacterEntity } from "../../../domain"
+import type { CharacterDB } from "../../../../modules/chatacters/domain/entity/character.interface.db"
+
 
 
 interface FavoritesCharacterStore {
-    favorites: CharacterEntity[]
+    favorites: CharacterDB[]
     countFavorites: number
-    addFavoriteAndremoVe: (character: CharacterEntity) => void
+    addFavoriteAndremoVe: (character: CharacterDB) => void
 }
 
 export const useFavoritesCharacterStore = create<FavoritesCharacterStore>(
