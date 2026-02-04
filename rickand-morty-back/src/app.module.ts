@@ -4,6 +4,7 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { join } from 'path';
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
 import { DatabaseModule } from './shared/database/database.module';
+import { CacheModule } from './shared/cache/cache.module';
 import { CharacterModule } from './character/character.module';
 import { GenderModule } from './gender/gender.module';
 import { OriginModule } from './origin/origin.module';
@@ -19,6 +20,7 @@ import { OriginModule } from './origin/origin.module';
       ]
     }),
     DatabaseModule,
+    CacheModule,
     CharacterModule,
     GenderModule,
     OriginModule
