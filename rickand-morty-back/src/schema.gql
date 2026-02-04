@@ -32,11 +32,45 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+type GenderRepositoryModelObj {
+  id: ID!
+  name: String!
+}
+
+type OriginRepositoryModelObj {
+  id: ID!
+  name: String!
+}
+
+type CharacterRepositoryModelObj {
+  id: ID!
+  name: String!
+  status: String!
+  species: String!
+  img: String!
+  originId: String!
+  speciesId: String!
+  origin: OriginRepositoryModelObj!
+  specie: GenderRepositoryModelObj!
+}
+
+type CharactersResponseObj {
+  message: String!
+  code: Int!
+  data: [CharacterRepositoryModelObj!]!
+}
+
+type GendersResponseObj {
+  message: String!
+  code: Int!
+  data: [GenderRepositoryModelObj!]!
+}
+
 type Query {
-  characters: [Character!]!
+  get_all_character: CharactersResponseObj!
   character(id: String!): Character!
   searchCharacters(filters: SearchFilterCharacterInput!): [Character!]!
-  genders: [Gender!]!
+  get_all_gender: GendersResponseObj!
 }
 
 input SearchFilterCharacterInput {

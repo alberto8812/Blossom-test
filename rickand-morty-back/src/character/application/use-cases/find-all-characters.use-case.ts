@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { CHARACTER_REPOSITORY, ICharacterRepository } from '../../domain/repository/character.repository.interface';
+import { CHARACTER_REPOSITORY, ICharacterRepository, IResponse } from '../../domain/repository/character.repository.interface';
 import { Character } from '../../domain/model/character.model';
 import { RedisCacheService } from '../../../shared/cache/redis-cache.service';
 import { CHARACTER_CACHE_KEYS } from '../constants/cache-keys';
@@ -12,14 +12,30 @@ export class FindAllCharactersUseCase {
     @Inject(CHARACTER_REPOSITORY)
     private readonly characterRepository: ICharacterRepository,
     private readonly cacheService: RedisCacheService,
-  ) {}
+  ) { }
 
-  async execute(): Promise<Character[]> {
-    const cached = await this.cacheService.get<Character[]>(CHARACTER_CACHE_KEYS.FIND_ALL);
-    if (cached) return cached;
+  async execute(): Promise<IResponse<Character[]>> {
+    try {
+      const cached = await this.cacheService.get<Character[]>(CHARACTER_CACHE_KEYS.FIND_ALL);
+      if (cached) return {
+        message: 'Characters retrieved from cache successfully',
+        code: 200,
+        data: cached,
+      };
 
-    const characters = await this.characterRepository.findAll();
-    await this.cacheService.set(CHARACTER_CACHE_KEYS.FIND_ALL, characters, this.TTL_SECONDS);
-    return characters;
+      const characters = await this.characterRepository.findAll();
+      await this.cacheService.set(CHARACTER_CACHE_KEYS.FIND_ALL, characters, this.TTL_SECONDS);
+      return {
+        message: 'Characters retrieved successfully',
+        code: 200,
+        data: characters.data,
+      };
+    } catch (error) {
+      return {
+        message: 'Error retrieving characters',
+        code: 500,
+        data: [],
+      };
+    }
   }
 }
