@@ -2,15 +2,20 @@ import { Inject, Injectable } from '@nestjs/common';
 import { CHARACTER_REPOSITORY, ICharacterRepository } from '../../domain/repository/character.repository.interface';
 import { CreateCharacterInput } from '../dto/create-character.input';
 import { Character } from '../../domain/model/character.model';
+import { RedisCacheService } from '../../../shared/cache/redis-cache.service';
+import { CHARACTER_CACHE_KEYS } from '../constants/cache-keys';
 
 @Injectable()
 export class CreateCharacterUseCase {
   constructor(
     @Inject(CHARACTER_REPOSITORY)
     private readonly characterRepository: ICharacterRepository,
+    private readonly cacheService: RedisCacheService,
   ) {}
 
-  execute(input: CreateCharacterInput): Promise<Character> {
-    return this.characterRepository.create(input);
+  async execute(input: CreateCharacterInput): Promise<Character> {
+    const character = await this.characterRepository.create(input);
+    await this.cacheService.deleteByPattern(CHARACTER_CACHE_KEYS.PATTERN_ALL);
+    return character;
   }
 }

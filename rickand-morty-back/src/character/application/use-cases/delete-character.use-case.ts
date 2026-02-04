@@ -1,12 +1,15 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CHARACTER_REPOSITORY, ICharacterRepository } from '../../domain/repository/character.repository.interface';
 import { Character } from '../../domain/model/character.model';
+import { RedisCacheService } from '../../../shared/cache/redis-cache.service';
+import { CHARACTER_CACHE_KEYS } from '../constants/cache-keys';
 
 @Injectable()
 export class DeleteCharacterUseCase {
   constructor(
     @Inject(CHARACTER_REPOSITORY)
     private readonly characterRepository: ICharacterRepository,
+    private readonly cacheService: RedisCacheService,
   ) {}
 
   async execute(id: string): Promise<Character> {
@@ -14,6 +17,8 @@ export class DeleteCharacterUseCase {
     if (!existing) {
       throw new NotFoundException(`Character with id ${id} not found`);
     }
-    return this.characterRepository.softDelete(id);
+    const character = await this.characterRepository.softDelete(id);
+    await this.cacheService.deleteByPattern(CHARACTER_CACHE_KEYS.PATTERN_ALL);
+    return character;
   }
 }
