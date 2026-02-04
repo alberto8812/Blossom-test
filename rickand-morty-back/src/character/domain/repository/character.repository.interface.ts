@@ -4,10 +4,16 @@ import { SearchFilterCharacter } from '../../application/interfaces/search-filte
 export const CHARACTER_REPOSITORY = 'CHARACTER_REPOSITORY';
 
 export interface ICharacterRepository {
-  findAll(): Promise<Character[]>;
-  findById(id: string): Promise<Character | null>;
-  create(data: Omit<Character, 'id' | 'createdAt' | 'updatedAt' | 'deletedAt' | 'origin' | 'species'>): Promise<Character>;
-  update(id: string, data: Partial<Omit<Character, 'id' | 'createdAt' | 'updatedAt' | 'deletedAt' | 'origin' | 'species'>>): Promise<Character>;
-  softDelete(id: string): Promise<Character>;
-  search(filters: SearchFilterCharacter): Promise<Character[]>;
+  findAll(): Promise<IResponse<Character[]>>;
+  findById(id: string): Promise<IResponse<Character | null>>;
+  create(data: Omit<Character, 'id' | 'createdAt' | 'updatedAt' | 'deletedAt' | 'origin' | 'species'>): Promise<IResponse<Character>>;
+  update(id: string, data: Partial<Omit<Character, 'id' | 'createdAt' | 'updatedAt' | 'deletedAt' | 'origin' | 'species'>>): Promise<IResponse<Character>>;
+  softDelete(id: string): Promise<IResponse<Character>>;
+  search(filters: SearchFilterCharacter): Promise<IResponse<Character[]>>;
+}
+
+export interface IResponse<T> {
+  message: string;
+  code: number;
+  data: T[] | T;
 }

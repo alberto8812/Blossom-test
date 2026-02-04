@@ -1,7 +1,7 @@
 import { ObjectType, Field, ID } from '@nestjs/graphql';
+import { GenderRepositoryModelObj } from 'src/gender/infrastructure/graphql/output/genser.type';
+import { OriginRepositoryModelObj } from 'src/origin/infrastructure/graphql/output/Origin.type';
 
-import { GenderRepositoryModelObj } from 'src/gender/infrastructare/graphql/output/genser.type';
-import { OriginRepositoryModelObj } from 'src/origin/infrastructare/graphql/output/Origin.type';
 
 @ObjectType()
 export class CharacterRepositoryModelObj {

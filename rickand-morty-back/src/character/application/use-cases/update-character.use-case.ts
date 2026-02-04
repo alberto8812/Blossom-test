@@ -1,5 +1,5 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { CHARACTER_REPOSITORY, ICharacterRepository } from '../../domain/repository/character.repository.interface';
+import { CHARACTER_REPOSITORY, ICharacterRepository, IResponse } from '../../domain/repository/character.repository.interface';
 import { UpdateCharacterInput } from '../dto/update-character.input';
 import { Character } from '../../domain/model/character.model';
 import { RedisCacheService } from '../../../shared/cache/redis-cache.service';
@@ -11,13 +11,17 @@ export class UpdateCharacterUseCase {
     @Inject(CHARACTER_REPOSITORY)
     private readonly characterRepository: ICharacterRepository,
     private readonly cacheService: RedisCacheService,
-  ) {}
+  ) { }
 
-  async execute(input: UpdateCharacterInput): Promise<Character> {
+  async execute(input: UpdateCharacterInput): Promise<IResponse<Character>> {
     const { id, ...data } = input;
     const existing = await this.characterRepository.findById(id);
     if (!existing) {
-      throw new NotFoundException(`Character with id ${id} not found`);
+      return {
+        message: `Character with id ${id} not found`,
+        code: 404,
+        data: [],
+      }
     }
     const character = await this.characterRepository.update(id, data);
     await this.cacheService.deleteByPattern(CHARACTER_CACHE_KEYS.PATTERN_ALL);
