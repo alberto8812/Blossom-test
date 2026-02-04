@@ -46,12 +46,11 @@ type CharacterRepositoryModelObj {
   id: ID!
   name: String!
   status: String!
-  species: String!
   img: String!
   originId: String!
   speciesId: String!
   origin: OriginRepositoryModelObj!
-  specie: GenderRepositoryModelObj!
+  species: GenderRepositoryModelObj!
 }
 
 type CharactersResponseObj {

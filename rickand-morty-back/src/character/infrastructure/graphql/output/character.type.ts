@@ -15,9 +15,6 @@ export class CharacterRepositoryModelObj {
     status: string;
 
     @Field()
-    species: string;
-
-    @Field()
     img: string;
 
     @Field()
@@ -30,5 +27,5 @@ export class CharacterRepositoryModelObj {
     origin: OriginRepositoryModelObj
 
     @Field()
-    specie: GenderRepositoryModelObj
+    species: GenderRepositoryModelObj
 }

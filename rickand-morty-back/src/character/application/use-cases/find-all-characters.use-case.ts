@@ -16,20 +16,16 @@ export class FindAllCharactersUseCase {
 
   async execute(): Promise<IResponse<Character[]>> {
     try {
-      const cached = await this.cacheService.get<Character[]>(CHARACTER_CACHE_KEYS.FIND_ALL);
-      if (cached) return {
-        message: 'Characters retrieved from cache successfully',
-        code: 200,
-        data: cached,
-      };
+      // const cached = await this.cacheService.get<Character[]>(CHARACTER_CACHE_KEYS.FIND_ALL);
+      // if (cached) return {
+      //   message: 'Characters retrieved from cache successfully',
+      //   code: 200,
+      //   data: cached,
+      // };
 
       const characters = await this.characterRepository.findAll();
-      await this.cacheService.set(CHARACTER_CACHE_KEYS.FIND_ALL, characters, this.TTL_SECONDS);
-      return {
-        message: 'Characters retrieved successfully',
-        code: 200,
-        data: characters.data,
-      };
+      await this.cacheService.set(CHARACTER_CACHE_KEYS.FIND_ALL, characters.data, this.TTL_SECONDS);
+      return characters;
     } catch (error) {
       return {
         message: 'Error retrieving characters',
