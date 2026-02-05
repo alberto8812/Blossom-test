@@ -1,5 +1,5 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { ORIGIN_REPOSITORY, IOriginRepository } from "src/origin/domain/repositories/origin.repository.interface";
+import { ORIGIN_REPOSITORY, IOriginRepository, IResponse } from "src/origin/domain/repositories/origin.repository.interface";
 import { Origin } from "src/origin/domain/model/origin.model";
 
 
@@ -10,7 +10,7 @@ export class FindAllOriginUseCase {
         @Inject(ORIGIN_REPOSITORY)
         private readonly originRepository: IOriginRepository
     ) { }
-    execute(): Promise<Origin[]> {
+    execute(): Promise<IResponse<Origin[]>> {
         return this.originRepository.findAll();
     }
 }

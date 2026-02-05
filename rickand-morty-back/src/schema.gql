@@ -65,11 +65,18 @@ type GendersResponseObj {
   data: [GenderRepositoryModelObj!]!
 }
 
+type OriginsResponseObj {
+  message: String!
+  code: Int!
+  data: [OriginRepositoryModelObj!]!
+}
+
 type Query {
   get_all_character(name: String, status: String, originId: String, speciesId: String): CharactersResponseObj!
   character(id: String!): Character!
   searchCharacters(filters: SearchFilterCharacterInput!): [Character!]!
   get_all_gender: GendersResponseObj!
+  get_all_origins: OriginsResponseObj!
 }
 
 input SearchFilterCharacterInput {
