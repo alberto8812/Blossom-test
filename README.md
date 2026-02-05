@@ -110,6 +110,3 @@ The GraphQL API is available at `/graphql` with the following main operations:
 ### Mutations
 - `updateCharacter(input)` - Update character comment
 
-## License
-
-MIT
