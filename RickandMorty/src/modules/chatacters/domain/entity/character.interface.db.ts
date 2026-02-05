@@ -5,6 +5,7 @@ export interface CharacterRaw {
     name: string;
     status: string;
     img: string;
+    comment?: string;
     origin: { name: string };
     species: { name: string };
 }
@@ -23,5 +24,6 @@ export interface CharacterDB {
     img: string;
     status: string;
     origin: string;
+    comment?: string;
 }
 

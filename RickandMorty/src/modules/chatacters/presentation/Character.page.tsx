@@ -5,6 +5,7 @@ import { useFindById } from "../../../shared/presentation/hooks/use-SelectPetiti
 import { useFavoritesCharacterStore } from "../../../shared/presentation/store";
 import type { CharacterDB } from "../domain/entity/character.interface.db";
 import { getAllCharactersById } from "../api/get-characters-by-id";
+import { Inputfieled } from "../components/ui/input/Inputfieled";
 
 export const CharacterPage = () => {
   const { id } = useParams();
@@ -12,13 +13,17 @@ export const CharacterPage = () => {
   const { data: character, isLoading } = useFindById<CharacterDB>(
     ["GET_CHARACTER_BY_ID", id],
     () => getAllCharactersById(id!),
-    !!id
+    !!id,
   );
 
   const favorites = useFavoritesCharacterStore((state) => state.favorites);
   const addFavoriteAndremoVe = useFavoritesCharacterStore(
     (state) => state.addFavoriteAndremoVe,
   );
+
+  const submitComment = () => {
+    // Function to handle comment submission
+  };
 
   if (!id) {
     return (
@@ -142,6 +147,9 @@ export const CharacterPage = () => {
           <p className="text-sm" style={{ color: "var(--text-secondary)" }}>
             {character.origin || "Unknown"}
           </p>
+        </div>
+        <div className="py-4">
+          <Inputfieled comment={character.comment} />
         </div>
       </div>
     </div>
