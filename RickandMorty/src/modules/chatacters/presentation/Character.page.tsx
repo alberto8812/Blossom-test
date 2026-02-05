@@ -6,6 +6,7 @@ import { useFavoritesCharacterStore } from "../../../shared/presentation/store";
 import type { CharacterDB } from "../domain/entity/character.interface.db";
 import { getAllCharactersById } from "../api/get-characters-by-id";
 import { Inputfieled } from "../components/ui/input/Inputfieled";
+import { Loading } from "../../../components/Loading";
 
 export const CharacterPage = () => {
   const { id } = useParams();
@@ -32,13 +33,7 @@ export const CharacterPage = () => {
   }
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-full">
-        <p className="text-sm" style={{ color: "var(--text-muted)" }}>
-          Loading...
-        </p>
-      </div>
-    );
+    return <Loading text="Loading character" />;
   }
 
   if (!character) {

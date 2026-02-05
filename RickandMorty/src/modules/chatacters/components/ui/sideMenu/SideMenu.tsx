@@ -8,6 +8,7 @@ import { IoIosCloseCircleOutline } from "react-icons/io";
 import { IoArrowBack } from "react-icons/io5";
 import { SearchSideMenu } from "../../../../../components/SearchSideMenu";
 import { Squeleton } from "../Squeleton";
+import { Loading } from "../../../../../components/Loading";
 import { Accordion } from "../../../../../components/Accordion";
 import {
   useFavoritesCharacterStore,
@@ -60,7 +61,7 @@ export const SideMenu = () => {
   const activeFilterCount = getActiveFilterCount(filters);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <Loading text="Loading characters" />;
   }
 
   const toggleSidebar = () => {
