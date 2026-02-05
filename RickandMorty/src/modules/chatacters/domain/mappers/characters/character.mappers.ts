@@ -12,6 +12,7 @@ export const characterMappers = (character: CharacterRaw): CharacterDB => {
 }
 export const characterDetailMappers = (Character: CharacterRaw): CharacterDB => {
     return {
+        comment: Character?.comment ?? '',
         name: Character.name,
         species: Character.species?.name ?? '',
         img: Character.img,

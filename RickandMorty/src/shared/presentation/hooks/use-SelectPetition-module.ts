@@ -1,4 +1,4 @@
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export const useFindAll = <T>(
     queryKey: unknown[],
@@ -22,3 +22,19 @@ export const useFindById = <T>(
         enabled,
     });
 };
+
+export const useSaveData = <T>(
+    queryKey: unknown[],
+    fetcher: (data: T) => Promise<void>
+) => {
+    const queryClient = useQueryClient();
+    const mutation = useMutation({
+        mutationFn: fetcher,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey });
+        },
+    });
+
+    return mutation;
+};
+
