@@ -2,7 +2,7 @@ import type { ResponseGeneric } from "../../../../shared/domain/base/response.in
 
 
 export interface ResponseOrigin {
-    get_all_origin: ResponseGeneric<OriginDB>;
+    get_all_origins: ResponseGeneric<OriginDB>;
 }
 
 export interface OriginDB {

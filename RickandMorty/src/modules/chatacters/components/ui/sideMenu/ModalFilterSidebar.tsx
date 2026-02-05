@@ -1,27 +1,31 @@
 import { useState } from "react";
 import { IoArrowBack } from "react-icons/io5";
+import type { OriginDB } from "../../../../origin/domain/entity/origin.interface";
+import type { SpecieDB } from "../../../../gender/domain/entity/specie.interface";
 
 interface Props {
   onClose: () => void;
   onApply: (filters: FilterState) => void;
   currentFilters: FilterState;
   isMobile: boolean;
+  origins: OriginDB[];
+  genders: SpecieDB[];
 }
 
 export interface FilterState {
-  character: "all" | "starred" | "others";
-  specie: "all" | "human" | "alien";
+  originId: "all" | string;
+  speciesId: "all" | string;
 }
 
 export const defaultFilters: FilterState = {
-  character: "all",
-  specie: "all",
+  originId: "all",
+  speciesId: "all",
 };
 
 export const getActiveFilterCount = (filters: FilterState): number => {
   let count = 0;
-  if (filters.character !== "all") count++;
-  if (filters.specie !== "all") count++;
+  if (filters.originId !== "all") count++;
+  if (filters.speciesId !== "all") count++;
   return count;
 };
 
@@ -56,6 +60,8 @@ export const ModalFilterSidebar = ({
   onApply,
   currentFilters,
   isMobile,
+  origins,
+  genders,
 }: Props) => {
   const [filters, setFilters] = useState<FilterState>(currentFilters);
 
@@ -64,65 +70,67 @@ export const ModalFilterSidebar = ({
     onClose();
   };
 
-  const hasFilters =
-    filters.character !== "all" || filters.specie !== "all";
+  const hasFilters = filters.originId !== "all" || filters.speciesId !== "all";
 
   if (isMobile) {
     return (
-      <div className="fixed inset-0 z-50 flex flex-col" style={{ backgroundColor: "var(--surface)" }}>
+      <div
+        className="fixed inset-0 z-50 flex flex-col"
+        style={{ backgroundColor: "var(--surface)" }}
+      >
         <div className="flex items-center px-5 py-4">
           <button onClick={onClose} className="mr-4 text-[var(--accent)]">
             <IoArrowBack size={22} />
           </button>
-          <h2 className="text-lg font-semibold flex-1 text-center pr-10" style={{ color: "var(--text-primary)" }}>
+          <h2
+            className="text-lg font-semibold flex-1 text-center pr-10"
+            style={{ color: "var(--text-primary)" }}
+          >
             Filters
           </h2>
         </div>
 
         <div className="flex-1 px-5 pt-4 space-y-8">
           <div className="space-y-3">
-            <p className="text-sm font-medium" style={{ color: "var(--text-secondary)" }}>
+            <p
+              className="text-sm font-medium"
+              style={{ color: "var(--text-secondary)" }}
+            >
               Characters
             </p>
             <div className="flex gap-3">
-              <PillButton
-                label="All"
-                isActive={filters.character === "all"}
-                onClick={() => setFilters({ ...filters, character: "all" })}
-              />
-              <PillButton
-                label="Starred"
-                isActive={filters.character === "starred"}
-                onClick={() => setFilters({ ...filters, character: "starred" })}
-              />
-              <PillButton
-                label="Others"
-                isActive={filters.character === "others"}
-                onClick={() => setFilters({ ...filters, character: "others" })}
-              />
+              {origins.map((origin) => (
+                <PillButton
+                  key={origin.id}
+                  label={origin.name}
+                  isActive={filters.originId === origin.id}
+                  onClick={() =>
+                    setFilters({
+                      ...filters,
+                      originId: origin.id,
+                    })
+                  }
+                />
+              ))}
             </div>
           </div>
 
           <div className="space-y-3">
-            <p className="text-sm font-medium" style={{ color: "var(--text-secondary)" }}>
+            <p
+              className="text-sm font-medium"
+              style={{ color: "var(--text-secondary)" }}
+            >
               Specie
             </p>
             <div className="flex gap-3">
-              <PillButton
-                label="All"
-                isActive={filters.specie === "all"}
-                onClick={() => setFilters({ ...filters, specie: "all" })}
-              />
-              <PillButton
-                label="Human"
-                isActive={filters.specie === "human"}
-                onClick={() => setFilters({ ...filters, specie: "human" })}
-              />
-              <PillButton
-                label="Alien"
-                isActive={filters.specie === "alien"}
-                onClick={() => setFilters({ ...filters, specie: "alien" })}
-              />
+              {genders.map((gen) => (
+                <PillButton
+                  key={gen.id}
+                  label={gen.name}
+                  isActive={filters.speciesId === gen.id}
+                  onClick={() => setFilters({ ...filters, speciesId: gen.id })}
+                />
+              ))}
             </div>
           </div>
         </div>
@@ -131,9 +139,7 @@ export const ModalFilterSidebar = ({
           <button
             onClick={handleApply}
             className={`w-full py-3.5 rounded-lg text-sm font-medium transition-colors ${
-              hasFilters
-                ? "text-white"
-                : "text-gray-400 cursor-default"
+              hasFilters ? "text-white" : "text-gray-400 cursor-default"
             }`}
             style={{
               backgroundColor: hasFilters ? "var(--accent)" : "#e5e7eb",
@@ -157,57 +163,52 @@ export const ModalFilterSidebar = ({
       }}
     >
       <div className="space-y-3">
-        <p className="text-sm font-medium" style={{ color: "var(--text-secondary)" }}>
+        <p
+          className="text-sm font-medium"
+          style={{ color: "var(--text-secondary)" }}
+        >
           Character
         </p>
         <div className="flex gap-3">
-          <PillButton
-            label="All"
-            isActive={filters.character === "all"}
-            onClick={() => setFilters({ ...filters, character: "all" })}
-          />
-          <PillButton
-            label="Starred"
-            isActive={filters.character === "starred"}
-            onClick={() => setFilters({ ...filters, character: "starred" })}
-          />
-          <PillButton
-            label="Others"
-            isActive={filters.character === "others"}
-            onClick={() => setFilters({ ...filters, character: "others" })}
-          />
+          {origins.map((origin) => (
+            <PillButton
+              key={origin.id}
+              label={origin.name}
+              isActive={filters.originId === origin.id}
+              onClick={() =>
+                setFilters({
+                  ...filters,
+                  originId: origin.id,
+                })
+              }
+            />
+          ))}
         </div>
       </div>
 
       <div className="space-y-3">
-        <p className="text-sm font-medium" style={{ color: "var(--text-secondary)" }}>
+        <p
+          className="text-sm font-medium"
+          style={{ color: "var(--text-secondary)" }}
+        >
           Specie
         </p>
         <div className="flex gap-3">
-          <PillButton
-            label="All"
-            isActive={filters.specie === "all"}
-            onClick={() => setFilters({ ...filters, specie: "all" })}
-          />
-          <PillButton
-            label="Human"
-            isActive={filters.specie === "human"}
-            onClick={() => setFilters({ ...filters, specie: "human" })}
-          />
-          <PillButton
-            label="Alien"
-            isActive={filters.specie === "alien"}
-            onClick={() => setFilters({ ...filters, specie: "alien" })}
-          />
+          {genders.map((gen) => (
+            <PillButton
+              key={gen.id}
+              label={gen.name}
+              isActive={filters.speciesId === gen.id}
+              onClick={() => setFilters({ ...filters, speciesId: gen.id })}
+            />
+          ))}
         </div>
       </div>
 
       <button
         onClick={handleApply}
         className={`w-full py-3 rounded-lg text-sm font-medium transition-colors ${
-          hasFilters
-            ? "text-white"
-            : "text-gray-500"
+          hasFilters ? "text-white" : "text-gray-500"
         }`}
         style={{
           backgroundColor: hasFilters ? "var(--accent)" : "#f3f4f6",
