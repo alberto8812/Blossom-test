@@ -2,6 +2,7 @@ import { useState } from "react";
 import { IoArrowBack } from "react-icons/io5";
 import type { OriginDB } from "../../../../origin/domain/entity/origin.interface";
 import type { SpecieDB } from "../../../../gender/domain/entity/specie.interface";
+import { useFilterSharestore } from "../../../../../shared/presentation/store";
 
 interface Props {
   onClose: () => void;
@@ -64,12 +65,23 @@ export const ModalFilterSidebar = ({
   origins,
   genders,
 }: Props) => {
-  const [filters, setFilters] = useState<FilterState>(currentFilters);
+  const specieFilter = useFilterSharestore((state) => state.specieFilter);
+  const characterFilter = useFilterSharestore((state) => state.originFilter);
+  const setValidatedFieldFilter = useFilterSharestore(
+    (state) => state.setValidatedFieldFilter,
+  );
+  const setCharacterFilter = useFilterSharestore(
+    (state) => state.setOriginCharacterFilter,
+  );
+  const setSpecieFilter = useFilterSharestore(
+    (state) => state.setSpeciesCharacterFilter,
+  );
 
-  const handleApply = () => {
-    onApply(filters);
+  const sendFilter = () => {
+    setValidatedFieldFilter();
     onClose();
   };
+  const [filters, setFilters] = useState<FilterState>(currentFilters);
 
   const hasFilters = filters.originId !== "all" || filters.speciesId !== "all";
 
@@ -104,13 +116,8 @@ export const ModalFilterSidebar = ({
                 <PillButton
                   key={origin.id}
                   label={origin.name}
-                  isActive={filters.originId === origin.id}
-                  onClick={() =>
-                    setFilters({
-                      ...filters,
-                      originId: origin.id,
-                    })
-                  }
+                  isActive={characterFilter.originId === origin.id}
+                  onClick={() => setCharacterFilter({ originId: origin.id })}
                 />
               ))}
             </div>
@@ -128,8 +135,8 @@ export const ModalFilterSidebar = ({
                 <PillButton
                   key={gen.id}
                   label={gen.name}
-                  isActive={filters.speciesId === gen.id}
-                  onClick={() => setFilters({ ...filters, speciesId: gen.id })}
+                  isActive={specieFilter.speciesId === gen.id}
+                  onClick={() => setSpecieFilter({ speciesId: gen.id })}
                 />
               ))}
             </div>
@@ -138,9 +145,12 @@ export const ModalFilterSidebar = ({
 
         <div className="px-5 pb-8 pt-4">
           <button
-            onClick={handleApply}
+            onClick={sendFilter}
             className={`w-full py-3.5 rounded-lg text-sm font-medium transition-colors ${
-              hasFilters ? "text-white" : "text-gray-400 cursor-default"
+              Object.keys(specieFilter).length ||
+              Object.keys(characterFilter).length
+                ? "text-white"
+                : "text-gray-400 cursor-default"
             }`}
             style={{
               backgroundColor: hasFilters ? "var(--accent)" : "#e5e7eb",
@@ -175,13 +185,8 @@ export const ModalFilterSidebar = ({
             <PillButton
               key={origin.id}
               label={origin.name}
-              isActive={filters.originId === origin.id}
-              onClick={() =>
-                setFilters({
-                  ...filters,
-                  originId: origin.id,
-                })
-              }
+              isActive={characterFilter.originId === origin.id}
+              onClick={() => setCharacterFilter({ originId: origin.id })}
             />
           ))}
         </div>
@@ -199,21 +204,29 @@ export const ModalFilterSidebar = ({
             <PillButton
               key={gen.id}
               label={gen.name}
-              isActive={filters.speciesId === gen.id}
-              onClick={() => setFilters({ ...filters, speciesId: gen.id })}
+              isActive={specieFilter.speciesId === gen.id}
+              onClick={() => setSpecieFilter({ speciesId: gen.id })}
             />
           ))}
         </div>
       </div>
 
       <button
-        onClick={handleApply}
+        onClick={sendFilter}
         className={`w-full py-3 rounded-lg text-sm font-medium transition-colors ${
           hasFilters ? "text-white" : "text-gray-500"
         }`}
         style={{
-          backgroundColor: hasFilters ? "var(--accent)" : "#f3f4f6",
-          border: hasFilters ? "none" : "1px solid #e5e7eb",
+          backgroundColor:
+            Object.keys(specieFilter).length ||
+            Object.keys(characterFilter).length
+              ? "var(--accent)"
+              : "#f3f4f6",
+          border:
+            Object.keys(specieFilter).length ||
+            Object.keys(characterFilter).length
+              ? "none"
+              : "1px solid #e5e7eb",
         }}
       >
         Filter
