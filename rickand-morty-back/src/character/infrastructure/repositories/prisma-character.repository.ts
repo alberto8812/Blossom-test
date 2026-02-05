@@ -19,8 +19,8 @@ export class PrismaCharacterRepository implements ICharacterRepository {
     const conditions = {
       name: () => where.name = { contains: filter.name, mode: 'insensitive' },
       status: () => where.status = { contains: filter.status, mode: 'insensitive' },
-      originId: () => where.originId = filter.originId,
-      speciesId: () => where.speciesId = filter.speciesId,
+      originId: () => filter.originId == 'all' ? undefined : where.originId = filter.originId,
+      speciesId: () => filter.speciesId == 'all' ? undefined : where.speciesId = filter.speciesId,
     }
 
     const conditionKeys = Object.keys(filter) as (keyof typeof conditions)[];
