@@ -1,7 +1,7 @@
 import { NavLink, useNavigate, useParams } from "react-router-dom";
 import { useSelectPetitionModule } from "../../../../../shared/presentation/hooks/use-SelectPetition-module";
 import { getAllCharacters } from "../../../api/get-all-characters";
-import { useState, useMemo } from "react";
+import { useState } from "react";
 
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { IoIosCloseCircleOutline } from "react-icons/io";
@@ -21,6 +21,8 @@ import {
   getActiveFilterCount,
   type FilterState,
 } from "./ModalFilterSidebar";
+import { getAllOrigin } from "../../../../origin/api/get-all-origin";
+import { getAllGender } from "../../../../gender/api/get-all-gender";
 
 export const SideMenu = () => {
   const navigate = useNavigate();
@@ -31,6 +33,12 @@ export const SideMenu = () => {
   const [isAdvancedSearch, setIsAdvancedSearch] = useState(false);
   const nameFilter = useFilterSharestore((state) => state.name);
   const characterFilter = useFilterSharestore((state) => state.characterFilter);
+  const favoritesCharacter = useFavoritesCharacterStore(
+    (state) => state.favorites,
+  );
+  const favoritesCountCharacter = useFavoritesCharacterStore(
+    (state) => state.countFavorites,
+  );
 
   const { data: characters, isLoading } = useSelectPetitionModule(
     [
@@ -48,49 +56,22 @@ export const SideMenu = () => {
       },
     },
   );
-  const favoritesCharacter = useFavoritesCharacterStore(
-    (state) => state.favorites,
-  );
-  const favoritesCountCharacter = useFavoritesCharacterStore(
-    (state) => state.countFavorites,
-  );
+  const { data: origins, isLoading: isLoadingOrigins } =
+    useSelectPetitionModule(["GET_ALL_ORIGIN"], {
+      findAll: async () => {
+        const origins = await getAllOrigin();
+        return { data: origins };
+      },
+    });
+  const { data: genders, isLoading: isLoadingGenders } =
+    useSelectPetitionModule(["GET_ALL_GENDER"], {
+      findAll: async () => {
+        const genders = await getAllGender();
+        return { data: genders };
+      },
+    });
 
   const activeFilterCount = getActiveFilterCount(filters);
-
-  // Apply filters to characters
-  const filteredCharacters = useMemo(() => {
-    if (!characters?.data) return [];
-    let result = characters.data as CharacterDB[];
-
-    // Specie filter
-    if (filters.specie !== "all") {
-      result = result.filter(
-        (c) => c.species.toLowerCase() === filters.specie.toLowerCase(),
-      );
-    }
-
-    return result;
-  }, [characters?.data, filters.specie]);
-
-  // Split into favorites and non-favorites, then apply character filter
-  const displayFavorites = useMemo(() => {
-    if (filters.character === "others") return [];
-    return favoritesCharacter.filter((fav) => {
-      if (filters.specie !== "all") {
-        return fav.species.toLowerCase() === filters.specie.toLowerCase();
-      }
-      return true;
-    });
-  }, [favoritesCharacter, filters]);
-
-  const displayCharacters = useMemo(() => {
-    if (filters.character === "starred") return [];
-    return filteredCharacters.filter(
-      (c) => !favoritesCharacter.find((fav) => fav.id === c.id),
-    );
-  }, [filteredCharacters, favoritesCharacter, filters.character]);
-
-  const totalResults = displayFavorites.length + displayCharacters.length;
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -177,9 +158,6 @@ export const SideMenu = () => {
                 </button>
               </div>
               <div className="flex items-center justify-between mt-3">
-                <span className="text-sm font-semibold text-[var(--accent)]">
-                  {totalResults} Results
-                </span>
                 {activeFilterCount > 0 && (
                   <span
                     className="text-xs font-medium px-2.5 py-1 rounded-md"
@@ -213,6 +191,8 @@ export const SideMenu = () => {
               {isOpenFilter && (
                 <div className="hidden lg:block">
                   <ModalFilterSidebar
+                    origins={origins?.data || []}
+                    genders={genders?.data || []}
                     onClose={handleCloseFilter}
                     onApply={handleApplyFilters}
                     currentFilters={filters}
@@ -231,6 +211,8 @@ export const SideMenu = () => {
                 onApply={handleApplyFilters}
                 currentFilters={filters}
                 isMobile={true}
+                origins={origins?.data || []}
+                genders={genders?.data || []}
               />
             </div>
           )}
@@ -240,38 +222,41 @@ export const SideMenu = () => {
             <Squeleton />
           ) : (
             <div className="flex-1 overflow-y-auto space-y-4">
-              {(filters.character === "all" ||
-                filters.character === "starred") && (
-                <Accordion
-                  title={`STARRED CHARACTERS (${displayFavorites.length})`}
-                >
-                  {displayFavorites.map((item: CharacterDB) => (
-                    <NavLink
-                      to={`/dashboard/characters/${item.id}`}
-                      key={item.id}
-                      className="block"
-                    >
-                      <ProfileCard
-                        id={item.id}
-                        name={item.name}
-                        species={item.species}
-                        img={item.img}
-                        favorite={true}
-                        isActive={activeId === item.id}
-                      />
-                    </NavLink>
-                  ))}
-                </Accordion>
-              )}
+              <Accordion
+                title={`STARRED CHARACTERS (${favoritesCountCharacter})`}
+              >
+                {favoritesCharacter.map((item: CharacterDB) => (
+                  <NavLink
+                    to={`/dashboard/characters/${item.id}`}
+                    key={item.id}
+                    className="block"
+                  >
+                    <ProfileCard
+                      id={item.id}
+                      name={item.name}
+                      species={item.species}
+                      img={item.img}
+                      favorite={true}
+                      isActive={activeId === item.id}
+                    />
+                  </NavLink>
+                ))}
+              </Accordion>
 
-              {(filters.character === "all" ||
-                filters.character === "others") && (
-                <Accordion
-                  title={`CHARACTERS (${displayCharacters.length})`}
-                  style="max-h-[calc(100vh-400px)]"
-                  initalState={true}
-                >
-                  {displayCharacters.map((item: CharacterDB) => (
+              <Accordion
+                title={`CHARCTERS (${
+                  (characters?.data.length ?? 0) - favoritesCountCharacter < 0
+                    ? 0
+                    : (characters?.data.length ?? 0) - favoritesCountCharacter
+                })`}
+                style="max-h-[calc(100vh-400px)]"
+                initalState={true}
+              >
+                {characters?.data.map((item: CharacterDB) => {
+                  if (favoritesCharacter?.find((fav) => fav.id === item.id)) {
+                    return null;
+                  }
+                  return (
                     <NavLink
                       to={`/dashboard/characters/${item.id}`}
                       key={item.id}
@@ -287,9 +272,9 @@ export const SideMenu = () => {
                         isActive={activeId === item.id}
                       />
                     </NavLink>
-                  ))}
-                </Accordion>
-              )}
+                  );
+                })}
+              </Accordion>
             </div>
           )}
         </div>
