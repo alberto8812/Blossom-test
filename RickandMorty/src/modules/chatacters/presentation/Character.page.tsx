@@ -1,10 +1,10 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 import { IoArrowBack } from "react-icons/io5";
-import { useSelectPetitionModule } from "../../shared/presentation/hooks/use-SelectPetition-module";
-import { getAllCharacters } from "./api/get-all-characters";
-import { useFavoritesCharacterStore } from "../../shared/presentation/store";
-import type { CharacterDB } from "./domain/entity/character.interface.db";
+import { useSelectPetitionModule } from "../../../shared/presentation/hooks/use-SelectPetition-module";
+import { getAllCharacters } from "../api/get-all-characters";
+import { useFavoritesCharacterStore } from "../../../shared/presentation/store";
+import type { CharacterDB } from "../domain/entity/character.interface.db";
 
 export const CharacterPage = () => {
   const { id } = useParams();
@@ -44,9 +44,7 @@ export const CharacterPage = () => {
     );
   }
 
-  const character = characters?.data?.find(
-    (c: CharacterDB) => c.id === id,
-  );
+  const character = characters?.data?.find((c: CharacterDB) => c.id === id);
 
   if (!character) {
     return (
@@ -82,7 +80,10 @@ export const CharacterPage = () => {
       </button>
 
       <div className="flex items-end gap-3 mb-2">
-        <div className="w-20 h-20 rounded-full overflow-hidden shrink-0 border" style={{ borderColor: "var(--border-light)" }}>
+        <div
+          className="w-20 h-20 rounded-full overflow-hidden shrink-0 border"
+          style={{ borderColor: "var(--border-light)" }}
+        >
           <img
             src={character.img || "./img/profile.jpg"}
             alt={character.name}
