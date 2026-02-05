@@ -9,7 +9,10 @@ import { IoArrowBack } from "react-icons/io5";
 import { SearchSideMenu } from "../../../../../components/SearchSideMenu";
 import { Squeleton } from "../Squeleton";
 import { Accordion } from "../../../../../components/Accordion";
-import { useFavoritesCharacterStore } from "../../../../../shared/presentation/store";
+import {
+  useFavoritesCharacterStore,
+  useFilterSharestore,
+} from "../../../../../shared/presentation/store";
 import type { CharacterDB } from "../../../domain/entity/character.interface.db";
 import { ProfileCard } from "../cards/ProfileCard";
 import {
@@ -26,12 +29,21 @@ export const SideMenu = () => {
   const [isOpenFilter, setIsOpenFilter] = useState(false);
   const [filters, setFilters] = useState<FilterState>(defaultFilters);
   const [isAdvancedSearch, setIsAdvancedSearch] = useState(false);
+  const nameFilter = useFilterSharestore((state) => state.name);
+  const characterFilter = useFilterSharestore((state) => state.characterFilter);
 
   const { data: characters, isLoading } = useSelectPetitionModule(
-    "GET_ALL_CHARACTER",
+    [
+      "GET_ALL_CHARACTER",
+      JSON.stringify(characterFilter),
+      JSON.stringify(nameFilter),
+    ],
     {
       findAll: async () => {
-        const characters = await getAllCharacters();
+        const characters = await getAllCharacters({
+          ...characterFilter,
+          ...nameFilter,
+        });
         return { data: characters };
       },
     },
@@ -165,9 +177,7 @@ export const SideMenu = () => {
                 </button>
               </div>
               <div className="flex items-center justify-between mt-3">
-                <span
-                  className="text-sm font-semibold text-[var(--accent)]"
-                >
+                <span className="text-sm font-semibold text-[var(--accent)]">
                   {totalResults} Results
                 </span>
                 {activeFilterCount > 0 && (

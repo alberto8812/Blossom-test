@@ -22,15 +22,11 @@ export const router = createBrowserRouter([
             children: [
               {
                 path: "",
-                element: <CharacterPage />,
+                element: <BlossomHero />,
               },
               {
                 path: "characters/:id",
                 element: <CharacterPage />,
-              },
-              {
-                path: "Blossom",
-                element: <BlossomHero />,
               },
             ],
           },

@@ -4,9 +4,15 @@ import { characterMappers } from "../domain/mappers/characters/character.mappers
 import { GET_ALL_CHARACTER } from "./graphql/get-all-character.query";
 
 
+export type NameFilter = 'name' | 'speciesId' | 'status' | 'originId';
+export interface CharacterFilter {
+  name?: string;
+  speciesId?: string;
+  status?: string;
+  originId?: string;
+}
 
-
-export const getAllCharacters = async (): Promise<CharacterDB[]> => {
+export const getAllCharacters = async (filter: CharacterFilter): Promise<CharacterDB[]> => {
   try {
     const { data } = await graphqlClient.query<ResponseCharacter>({
       query: GET_ALL_CHARACTER,
