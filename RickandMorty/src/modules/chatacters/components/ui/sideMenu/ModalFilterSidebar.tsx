@@ -193,6 +193,12 @@ export const ModalFilterSidebar = ({
           Character
         </p>
         <div className="flex flex-wrap gap-2">
+          <PillButton
+            key="all"
+            label="All"
+            isActive={characterFilter.originId === "all"}
+            onClick={() => setCharacterFilter({ originId: "all" })}
+          />
           {origins.map((origin) => (
             <PillButton
               key={origin.id}
@@ -212,6 +218,12 @@ export const ModalFilterSidebar = ({
           Specie
         </p>
         <div className="flex flex-wrap gap-2">
+          <PillButton
+            key="all"
+            label="All"
+            isActive={specieFilter.speciesId === "all"}
+            onClick={() => setSpecieFilter({ speciesId: "all" })}
+          />
           {genders.map((gen) => (
             <PillButton
               key={gen.id}
