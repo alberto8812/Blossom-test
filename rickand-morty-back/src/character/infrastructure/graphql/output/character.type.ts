@@ -28,4 +28,7 @@ export class CharacterRepositoryModelObj {
 
     @Field()
     species: GenderRepositoryModelObj
+
+    @Field({ nullable: true })
+    comment: string;
 }

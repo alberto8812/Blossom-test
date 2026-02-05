@@ -51,6 +51,7 @@ type CharacterRepositoryModelObj {
   speciesId: String!
   origin: OriginRepositoryModelObj!
   species: GenderRepositoryModelObj!
+  comment: String
 }
 
 type CharactersResponseObj {
