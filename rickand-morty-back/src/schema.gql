@@ -95,9 +95,9 @@ input SearchFilterCharacterInput {
 }
 
 type Mutation {
-  createCharacter(input: CreateCharacterInput!): Character!
-  updateCharacter(input: UpdateCharacterInput!): Character!
-  deleteCharacter(id: String!): Character!
+  createCharacter(input: CreateCharacterInput!): CharacterResponseObj!
+  updateCharacter(input: UpdateCharacterInput!): CharacterResponseObj!
+  deleteCharacter(id: String!): CharacterResponseObj!
 
   """Ejecuta el seed con datos de la API de Rick and Morty"""
   executeSeed: Boolean!

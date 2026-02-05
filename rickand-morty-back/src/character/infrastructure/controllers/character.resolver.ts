@@ -38,17 +38,17 @@ export class CharacterResolver {
     return this.searchUseCase.execute(filters);
   }
 
-  @Mutation(() => Character)
+  @Mutation(() => CharacterResponseObj)
   createCharacter(@Args('input') input: CreateCharacterInput) {
     return this.createUseCase.execute(input);
   }
 
-  @Mutation(() => Character)
+  @Mutation(() => CharacterResponseObj)
   updateCharacter(@Args('input') input: UpdateCharacterInput) {
     return this.updateUseCase.execute(input);
   }
 
-  @Mutation(() => Character)
+  @Mutation(() => CharacterResponseObj)
   deleteCharacter(@Args('id') id: string) {
     return this.deleteUseCase.execute(id);
   }
