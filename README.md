@@ -1,8 +1,8 @@
 # Rick and Morty App
 
-Full-stack application built with React and NestJS that allows users to explore characters from the Rick and Morty universe.
+Aplicacion full-stack construida con React y NestJS que permite explorar personajes del universo Rick and Morty.
 
-## Project Structure
+## Estructura del Proyecto
 
 ```
 .
@@ -11,23 +11,23 @@ Full-stack application built with React and NestJS that allows users to explore 
 └── README.md
 ```
 
-## Features
+## Funcionalidades
 
-- Browse all Rick and Morty characters
-- View character details (species, status, origin)
-- Add/remove characters from favorites
-- Filter characters by name, species, status, and origin
-- Add comments to characters
-- Responsive design (mobile and desktop)
+- Explorar todos los personajes de Rick and Morty
+- Ver detalles del personaje (especie, estado, origen)
+- Agregar/quitar personajes de favoritos
+- Filtrar personajes por nombre, especie, estado y origen
+- Agregar comentarios a los personajes
+- Diseno responsive (mobile y desktop)
 
-## Tech Stack
+## Stack Tecnologico
 
 ### Frontend
 - React 18
 - TypeScript
 - Vite
 - TanStack Query (React Query)
-- Zustand (State Management)
+- Zustand (Manejo de estado)
 - Apollo Client (GraphQL)
 - Tailwind CSS
 - React Router
@@ -38,43 +38,43 @@ Full-stack application built with React and NestJS that allows users to explore 
 - GraphQL (Apollo Server)
 - Prisma ORM
 - PostgreSQL
-- Redis (Caching)
+- Redis (Cache)
 - Docker
 
-## Quick Start
+## Inicio Rapido
 
-### Prerequisites
+### Requisitos previos
 - Node.js 18+
 - pnpm
-- Docker & Docker Compose
+- Docker y Docker Compose
 
-### 1. Clone the repository
+### 1. Clonar el repositorio
 ```bash
 git clone <repository-url>
 cd new
 ```
 
-### 2. Start the backend
+### 2. Iniciar el backend
 ```bash
 cd rickand-morty-back
 pnpm install
-docker-compose up -d  # Start PostgreSQL and Redis
+docker-compose up -d  # Inicia PostgreSQL y Redis
 pnpm prisma migrate dev
 pnpm run start:dev
 ```
 
-### 3. Start the frontend
+### 3. Iniciar el frontend
 ```bash
 cd RickandMorty
 pnpm install
 pnpm run dev
 ```
 
-### 4. Open the app
+### 4. Abrir la aplicacion
 - Frontend: http://localhost:5173
 - GraphQL Playground: http://localhost:3000/graphql
 
-## Environment Variables
+## Variables de Entorno
 
 ### Backend (.env)
 ```env
@@ -88,8 +88,8 @@ REDIS_PORT=6379
 ### Frontend
 ```bash
 cd RickandMorty
-pnpm test        # Run tests in watch mode
-pnpm test --run  # Run tests once
+pnpm test        # Ejecutar tests en modo watch
+pnpm test --run  # Ejecutar tests una vez
 ```
 
 ### Backend
@@ -99,14 +99,13 @@ pnpm test
 pnpm test:e2e
 ```
 
-## API Documentation
+## Documentacion de la API
 
-The GraphQL API is available at `/graphql` with the following main operations:
+La API GraphQL esta disponible en `/graphql` con las siguientes operaciones principales:
 
 ### Queries
-- `get_all_character` - Get all characters with filters
-- `get_one_character(id)` - Get character by ID
+- `get_all_character` - Obtener todos los personajes con filtros
+- `get_one_character(id)` - Obtener personaje por ID
 
 ### Mutations
-- `updateCharacter(input)` - Update character comment
-
+- `updateCharacter(input)` - Actualizar comentario del personaje
