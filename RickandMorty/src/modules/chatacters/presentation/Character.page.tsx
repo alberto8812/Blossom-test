@@ -145,7 +145,7 @@ export const CharacterPage = () => {
           </p>
         </div>
         <div className="py-4">
-          <Inputfieled comment={character.comment} id={character.id} />
+          <Inputfieled key={character.id} comment={character.comment} id={character.id} />
         </div>
       </div>
     </div>

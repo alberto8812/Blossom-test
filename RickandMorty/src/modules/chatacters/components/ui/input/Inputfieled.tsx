@@ -9,10 +9,13 @@ interface Props {
 
 export const Inputfieled = ({ comment: initialComment, id }: Props) => {
   const [comment, setComment] = useState(initialComment || "");
-
+  console.log("Inputfieled rendered with id:", id, "and initialComment:", {
+    initialComment,
+    id,
+  });
   const { mutate, isPending } = useSaveData(
     ["GET_CHARACTER_BY_ID", id],
-    (newComment: string) => updateCharacterComment({ id, comment: newComment })
+    (newComment: string) => updateCharacterComment({ id, comment: newComment }),
   );
 
   const handleSubmit = () => {

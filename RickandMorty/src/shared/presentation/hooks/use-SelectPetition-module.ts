@@ -27,6 +27,7 @@ export const useSaveData = <T>(
     queryKey: unknown[],
     fetcher: (data: T) => Promise<void>
 ) => {
+    console.log("useSaveData called with queryKey:", queryKey);
     const queryClient = useQueryClient();
     const mutation = useMutation({
         mutationFn: fetcher,
