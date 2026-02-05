@@ -1,22 +1,18 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 import { IoArrowBack } from "react-icons/io5";
-import { useSelectPetitionModule } from "../../../shared/presentation/hooks/use-SelectPetition-module";
-import { getAllCharacters } from "../api/get-all-characters";
+import { useFindById } from "../../../shared/presentation/hooks/use-SelectPetition-module";
 import { useFavoritesCharacterStore } from "../../../shared/presentation/store";
 import type { CharacterDB } from "../domain/entity/character.interface.db";
+import { getAllCharactersById } from "../api/get-characters-by-id";
 
 export const CharacterPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { data: characters, isLoading } = useSelectPetitionModule(
-    "GET_ALL_CHARACTER",
-    {
-      findAll: async () => {
-        const characters = await getAllCharacters();
-        return { data: characters };
-      },
-    },
+  const { data: character, isLoading } = useFindById<CharacterDB>(
+    ["GET_CHARACTER_BY_ID", id],
+    () => getAllCharactersById(id!),
+    !!id
   );
 
   const favorites = useFavoritesCharacterStore((state) => state.favorites);
@@ -43,8 +39,6 @@ export const CharacterPage = () => {
       </div>
     );
   }
-
-  const character = characters?.data?.find((c: CharacterDB) => c.id === id);
 
   if (!character) {
     return (

@@ -1,5 +1,5 @@
 import { NavLink, useNavigate, useParams } from "react-router-dom";
-import { useSelectPetitionModule } from "../../../../../shared/presentation/hooks/use-SelectPetition-module";
+import { useFindAll } from "../../../../../shared/presentation/hooks/use-SelectPetition-module";
 import { getAllCharacters } from "../../../api/get-all-characters";
 import { useState } from "react";
 
@@ -23,6 +23,8 @@ import {
 } from "./ModalFilterSidebar";
 import { getAllOrigin } from "../../../../origin/api/get-all-origin";
 import { getAllGender } from "../../../../gender/api/get-all-gender";
+import type { OriginDB } from "../../../../origin/domain/entity/origin.interface";
+import type { SpecieDB } from "../../../../gender/domain/entity/specie.interface";
 
 export const SideMenu = () => {
   const navigate = useNavigate();
@@ -40,36 +42,20 @@ export const SideMenu = () => {
     (state) => state.countFavorites,
   );
 
-  const { data: characters, isLoading } = useSelectPetitionModule(
-    [
-      "GET_ALL_CHARACTER",
-      JSON.stringify(characterFilter),
-      JSON.stringify(nameFilter),
-    ],
-    {
-      findAll: async () => {
-        const characters = await getAllCharacters({
-          ...characterFilter,
-          ...nameFilter,
-        });
-        return { data: characters };
-      },
-    },
+  const { data: characters, isLoading } = useFindAll<CharacterDB>(
+    ["GET_ALL_CHARACTER", JSON.stringify(characterFilter), JSON.stringify(nameFilter)],
+    () => getAllCharacters({ ...characterFilter, ...nameFilter })
   );
-  const { data: origins, isLoading: isLoadingOrigins } =
-    useSelectPetitionModule(["GET_ALL_ORIGIN"], {
-      findAll: async () => {
-        const origins = await getAllOrigin();
-        return { data: origins };
-      },
-    });
-  const { data: genders, isLoading: isLoadingGenders } =
-    useSelectPetitionModule(["GET_ALL_GENDER"], {
-      findAll: async () => {
-        const genders = await getAllGender();
-        return { data: genders };
-      },
-    });
+
+  const { data: origins, isLoading: isLoadingOrigins } = useFindAll<OriginDB>(
+    ["GET_ALL_ORIGIN"],
+    getAllOrigin
+  );
+
+  const { data: genders, isLoading: isLoadingGenders } = useFindAll<SpecieDB>(
+    ["GET_ALL_GENDER"],
+    getAllGender
+  );
 
   const activeFilterCount = getActiveFilterCount(filters);
 
@@ -191,8 +177,8 @@ export const SideMenu = () => {
               {isOpenFilter && (
                 <div className="hidden lg:block">
                   <ModalFilterSidebar
-                    origins={origins?.data || []}
-                    genders={genders?.data || []}
+                    origins={origins || []}
+                    genders={genders || []}
                     onClose={handleCloseFilter}
                     onApply={handleApplyFilters}
                     currentFilters={filters}
@@ -211,8 +197,8 @@ export const SideMenu = () => {
                 onApply={handleApplyFilters}
                 currentFilters={filters}
                 isMobile={true}
-                origins={origins?.data || []}
-                genders={genders?.data || []}
+                origins={origins || []}
+                genders={genders || []}
               />
             </div>
           )}
@@ -245,14 +231,14 @@ export const SideMenu = () => {
 
               <Accordion
                 title={`CHARCTERS (${
-                  (characters?.data.length ?? 0) - favoritesCountCharacter < 0
+                  (characters?.length ?? 0) - favoritesCountCharacter < 0
                     ? 0
-                    : (characters?.data.length ?? 0) - favoritesCountCharacter
+                    : (characters?.length ?? 0) - favoritesCountCharacter
                 })`}
                 style="max-h-[calc(100vh-400px)]"
                 initalState={true}
               >
-                {characters?.data.map((item: CharacterDB) => {
+                {characters?.map((item: CharacterDB) => {
                   if (favoritesCharacter?.find((fav) => fav.id === item.id)) {
                     return null;
                   }

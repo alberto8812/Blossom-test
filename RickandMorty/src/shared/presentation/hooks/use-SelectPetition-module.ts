@@ -1,17 +1,24 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import type { BasePaginatedRepository } from "../../domain/base/base-repository.interface";
 
-export const useSelectPetitionModule = <T>(
-    queryKey: unknown,
-    actions: Pick<BasePaginatedRepository<T>, 'findAll'>
+export const useFindAll = <T>(
+    queryKey: unknown[],
+    fetcher: () => Promise<T[]>
 ) => {
-    const { data, isLoading } = useQuery({
-        queryKey: [queryKey],
-        queryFn: () => actions.findAll(),
+    return useQuery({
+        queryKey,
+        queryFn: fetcher,
         placeholderData: keepPreviousData,
     });
-    return {
-        data,
-        isLoading,
-    };
-}
+};
+
+export const useFindById = <T>(
+    queryKey: unknown[],
+    fetcher: () => Promise<T>,
+    enabled = true
+) => {
+    return useQuery({
+        queryKey,
+        queryFn: fetcher,
+        enabled,
+    });
+};
