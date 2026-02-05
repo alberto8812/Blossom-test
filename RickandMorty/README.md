@@ -1,73 +1,189 @@
-# React + TypeScript + Vite
+# Rick and Morty
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aplicacion web para explorar personajes del universo Rick and Morty. Permite buscar, filtrar y guardar personajes favoritos con una interfaz responsive y animaciones GSAP.
 
-Currently, two official plugins are available:
+## Tech Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+| Categoria | Tecnologia |
+|-----------|-----------|
+| Framework | React 18.3 + TypeScript 5.9 |
+| Build | Vite 7.2 |
+| Estilos | Tailwind CSS 4.1 |
+| Estado global | Zustand 5.0 |
+| Data fetching | Apollo Client 4.1 + React Query 5.9 |
+| Routing | React Router DOM 7.13 |
+| Animaciones | GSAP 3.14 + @gsap/react 2.1 |
+| Iconos | React Icons 5.5 |
 
-## React Compiler
+## Requisitos previos
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- Node.js >= 18
+- pnpm (recomendado) o npm
+- Backend GraphQL corriendo en `http://localhost:3000/graphql`
 
-## Expanding the ESLint configuration
+## Instalacion
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+```bash
+# Instalar dependencias
+pnpm install
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# Configurar variables de entorno
+cp .env.example .env
+# Editar .env si el backend usa otro puerto
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Variables de entorno
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```env
+VITE_GRAPHQL_URL=http://localhost:3000/graphql
 ```
+
+## Scripts
+
+```bash
+pnpm dev        # Servidor de desarrollo
+pnpm build      # Build de produccion (tsc + vite)
+pnpm preview    # Preview del build
+pnpm lint       # Ejecutar ESLint
+```
+
+## Estructura del proyecto
+
+```
+src/
+├── components/                # Componentes compartidos
+│   ├── Accordion.tsx
+│   └── SearchSideMenu.tsx
+├── modules/
+│   └── chatacters/
+│       ├── api/               # Llamadas GraphQL
+│       │   ├── get-all-characters.ts
+│       │   └── graphql/
+│       ├── components/ui/     # Componentes UI del modulo
+│       │   ├── cards/         # ProfileCard
+│       │   ├── layouts/       # DashBoardCharactersLayout
+│       │   └── sideMenu/      # SideMenu, ModalFilterSidebar
+│       ├── domain/            # Entidades, interfaces, mappers
+│       │   ├── entity/
+│       │   └── mappers/
+│       └── presentation/      # Paginas
+│           ├── Character.page.tsx
+│           └── intro.page.tsx
+├── shared/
+│   ├── domain/base/           # Interfaces base (response, filters)
+│   └── presentation/
+│       ├── graphql/           # Configuracion Apollo Client
+│       ├── handkeErrors/      # Error boundary, PageError
+│       ├── hooks/             # useSelectPetitionModule
+│       ├── layouts/           # DashBoardLayout
+│       ├── router/            # Configuracion React Router
+│       └── store/             # Zustand stores
+│           ├── favorites/     # Personajes favoritos
+│           └── filterShare/   # Estado de filtros
+├── App.tsx
+├── main.tsx
+└── index.css                  # Design tokens (CSS variables)
+```
+
+## Arquitectura
+
+El proyecto sigue una **arquitectura modular por capas**:
+
+- **domain/** — Entidades, interfaces y mappers. Sin dependencias de framework.
+- **api/** — Queries GraphQL y funciones de fetch.
+- **presentation/** — Paginas, componentes UI, hooks, stores.
+- **shared/** — Codigo reutilizable entre modulos.
+
+### Flujo de datos
+
+```
+GraphQL API → Apollo Client → React Query (cache) → Componentes
+                                                   ↕
+                                              Zustand (favoritos, filtros)
+```
+
+## Rutas
+
+| Ruta | Descripcion |
+|------|-------------|
+| `/dashboard` | Lista de personajes con sidebar |
+| `/dashboard/characters/:id` | Detalle de un personaje |
+| `/dashboard/Blossom` | Pagina intro con animacion GSAP |
+| `/404` | Pagina de error |
+
+## Funcionalidades
+
+- **Lista de personajes** — Sidebar con busqueda por nombre y scroll independiente
+- **Favoritos** — Toggle con corazon, seccion "Starred Characters" separada
+- **Filtros avanzados** — Por tipo (All/Starred/Others) y especie (All/Human/Alien). En desktop aparece como dropdown, en mobile como pagina completa
+- **Detalle de personaje** — Vista con avatar, especie, estado y origen. En mobile incluye boton de retroceso
+- **Responsive** — Sidebar colapsable en mobile, layouts adaptados por breakpoint
+- **Animaciones** — Intro con GSAP usando `useGSAP` hook (scatter → settle → idle float)
+- **Error handling** — Error boundary global con fallback visual
+
+## Design Tokens
+
+Los tokens se definen como CSS variables en `src/index.css`:
+
+```css
+--accent: #5A3696        /* Purple principal */
+--accent-light: #EDE8F5  /* Purple claro (filtros activos, hover) */
+--accent-heart: #48BB78  /* Verde para favoritos */
+--text-primary: #1a1a2e
+--text-secondary: #6b7280
+--text-muted: #9ca3af
+--border-light: #f0f0f0
+--surface: #ffffff
+--surface-hover: #f9f8fc
+```
+
+## GraphQL
+
+```graphql
+query GetAllCharacters {
+  get_all_character {
+    code
+    message
+    data {
+      id, name, status, img
+      origin { name }
+      species { name }
+    }
+  }
+}
+```
+
+## Modelo de datos
+
+```typescript
+// Respuesta cruda de la API
+interface CharacterRaw {
+  id: string;
+  name: string;
+  status: string;
+  img: string;
+  origin: { name: string };
+  species: { name: string };
+}
+
+// Modelo interno (post-mapper)
+interface CharacterDB {
+  id: string;
+  name: string;
+  species: string;
+  img: string;
+  status: string;
+  origin: string;
+}
+```
+
+## Stores (Zustand)
+
+**Favorites Store** — Gestiona personajes favoritos:
+- `favorites: CharacterDB[]`
+- `countFavorites: number`
+- `addFavoriteAndremoVe(character)` — Toggle agregar/eliminar
+
+**Filter Store** — Gestiona el estado de busqueda y filtros:
+- `specieFilter`, `originFilter`, `characterFilter`, `name`
+- Metodos para actualizar cada filtro y validar antes de aplicar

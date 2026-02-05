@@ -1,99 +1,362 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Rick and Morty Backend
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+API GraphQL para gestionar personajes del universo Rick and Morty, construida con NestJS, Prisma, PostgreSQL y Redis.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Stack tecnologico
 
-## Description
+| Tecnologia | Version | Uso |
+|---|---|---|
+| NestJS | 11 | Framework backend |
+| GraphQL | 16 | API query language |
+| Apollo Server | 5 | Servidor GraphQL |
+| Prisma | 7 | ORM |
+| PostgreSQL | 16 | Base de datos |
+| Redis | 7 | Cache |
+| ioredis | 5 | Cliente Redis |
+| TypeScript | 5 | Lenguaje |
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Arquitectura
 
-## Project setup
+El proyecto sigue **Clean Architecture** con tres capas por modulo:
 
-```bash
-$ pnpm install
+```
+src/
+├── config/
+│   └── envs.ts                                    # Configuracion de entorno (Joi)
+├── shared/
+│   ├── cache/
+│   │   ├── cache.module.ts                        # Modulo global de cache
+│   │   └── redis-cache.service.ts                 # Servicio generico de Redis
+│   ├── database/
+│   │   ├── database.module.ts                     # Modulo global de base de datos
+│   │   └── prisma-manager.service.ts              # Servicio de Prisma
+│   ├── adapters/
+│   │   └── http/
+│   │       └── http.service.adapter.ts            # Cliente HTTP (Axios)
+│   └── graphql/
+│       ├── args/                                  # Args compartidos (pagination, search)
+│       └── reponse/                               # Tipos de respuesta compartidos
+├── character/
+│   ├── domain/
+│   │   ├── model/
+│   │   │   └── character.model.ts                 # Entidad Character (ObjectType)
+│   │   └── repository/
+│   │       └── character.repository.interface.ts  # Contrato del repositorio
+│   ├── application/
+│   │   ├── constants/
+│   │   │   └── cache-keys.ts                     # Claves de cache
+│   │   ├── dto/
+│   │   │   ├── create-character.input.ts
+│   │   │   ├── update-character.input.ts
+│   │   │   └── search-filter-character.input.ts
+│   │   ├── interfaces/
+│   │   │   └── search-filter-character.interface.ts
+│   │   └── use-cases/
+│   │       ├── find-all-characters.use-case.ts
+│   │       ├── find-character-by-id.use-case.ts
+│   │       ├── create-character.use-case.ts
+│   │       ├── update-character.use-case.ts
+│   │       ├── delete-character.use-case.ts
+│   │       └── search-characters.use-case.ts
+│   ├── infrastructure/
+│   │   ├── controllers/
+│   │   │   └── character.resolver.ts              # Resolver GraphQL
+│   │   └── repositories/
+│   │       └── prisma-character.repository.ts     # Implementacion Prisma
+│   └── character.module.ts
+├── gender/                                        # Misma estructura de capas
+├── origin/                                        # Misma estructura de capas
+├── app.module.ts
+└── main.ts
 ```
 
-## Compile and run the project
+### Capas
 
-```bash
-# development
-$ pnpm run start
-
-# watch mode
-$ pnpm run start:dev
-
-# production mode
-$ pnpm run start:prod
+```
+┌─────────────────────────────────────────────┐
+│              Infrastructure                 │
+│  Resolvers GraphQL, Repositorios Prisma     │
+├─────────────────────────────────────────────┤
+│              Application                    │
+│  Use Cases, DTOs, Interfaces                │
+├─────────────────────────────────────────────┤
+│              Domain                         │
+│  Modelos, Interfaces de Repositorio         │
+└─────────────────────────────────────────────┘
 ```
 
-## Run tests
+- **Domain**: Modelos de entidad y contratos de repositorio. Sin dependencias externas.
+- **Application**: Casos de uso con logica de negocio, DTOs para entrada/salida.
+- **Infrastructure**: Implementaciones concretas (Prisma, GraphQL resolvers).
 
-```bash
-# unit tests
-$ pnpm run test
+## Base de datos
 
-# e2e tests
-$ pnpm run test:e2e
+### Diagrama de relaciones
 
-# test coverage
-$ pnpm run test:cov
+```
+┌──────────────────────────┐
+│         origins          │
+├──────────────────────────┤
+│ id         UUID (PK)     │
+│ name       VARCHAR       │
+│ deleted_at TIMESTAMP?    │
+├──────────────────────────┤
+│ INDEX: name              │
+│ INDEX: deleted_at        │
+└──────────┬───────────────┘
+           │
+           │ 1:N
+           │
+┌──────────▼───────────────┐       ┌──────────────────────────┐
+│       characters         │       │         genders          │
+├──────────────────────────┤       ├──────────────────────────┤
+│ id         UUID (PK)     │       │ id         UUID (PK)     │
+│ name       VARCHAR       │       │ name       VARCHAR       │
+│ status     VARCHAR       │       │ deleted_at TIMESTAMP?    │
+│ origin_id  UUID (FK) ────┘       ├──────────────────────────┤
+│ species_id UUID (FK) ───────────>│ INDEX: name              │
+│ comment    VARCHAR?      │       │ INDEX: deleted_at        │
+│ created_at TIMESTAMP     │       └──────────────────────────┘
+│ updated_at TIMESTAMP     │
+│ deleted_at TIMESTAMP?    │              N:1
+├──────────────────────────┤
+│ INDEX: name              │
+│ INDEX: status            │
+│ INDEX: origin_id         │
+│ INDEX: species_id        │
+│ INDEX: deleted_at        │
+└──────────────────────────┘
 ```
 
-## Deployment
+### Relaciones
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+| Relacion | Tipo | Descripcion |
+|---|---|---|
+| Character -> Origin | N:1 | Cada personaje tiene un origen |
+| Character -> Gender | N:1 | Cada personaje tiene un genero/especie |
+| Origin -> Character | 1:N | Un origen tiene muchos personajes |
+| Gender -> Character | 1:N | Un genero tiene muchos personajes |
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+### Soft Delete
 
-```bash
-$ pnpm install -g mau
-$ mau deploy
+Todas las tablas implementan soft delete mediante el campo `deleted_at`. Los registros no se eliminan fisicamente, solo se marca la fecha de eliminacion. Las consultas filtran automaticamente `deleted_at IS NULL`.
+
+## API GraphQL
+
+### Queries
+
+```graphql
+# Obtener todos los personajes (con cache Redis, TTL 10 min)
+query {
+  characters {
+    id
+    name
+    status
+    originId
+    speciesId
+    comment
+    createdAt
+    updatedAt
+  }
+}
+
+# Obtener personaje por ID
+query {
+  character(id: "uuid") {
+    id
+    name
+    status
+  }
+}
+
+# Buscar personajes con filtros (case-insensitive)
+query {
+  searchCharacters(filters: {
+    name: "Rick"
+    status: "Alive"
+  }) {
+    id
+    name
+    status
+  }
+}
+
+# Obtener todos los generos
+query {
+  genders {
+    id
+    name
+  }
+}
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### Mutations
 
-## Resources
+```graphql
+# Crear personaje (invalida cache)
+mutation {
+  createCharacter(input: {
+    name: "Rick Sanchez"
+    status: "Alive"
+    originId: "uuid"
+    speciesId: "uuid"
+    comment: "Scientist"
+  }) {
+    id
+    name
+  }
+}
 
-Check out a few resources that may come in handy when working with NestJS:
+# Actualizar personaje (invalida cache)
+mutation {
+  updateCharacter(input: {
+    id: "uuid"
+    name: "Morty Smith"
+  }) {
+    id
+    name
+  }
+}
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+# Eliminar personaje - soft delete (invalida cache)
+mutation {
+  deleteCharacter(id: "uuid") {
+    id
+    deletedAt
+  }
+}
+```
 
-## Support
+## Cache (Redis)
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+El servicio `RedisCacheService` es generico y centralizado en `src/shared/cache/redis-cache.service.ts`.
 
-## Stay in touch
+### Metodos disponibles
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+| Metodo | Descripcion |
+|---|---|
+| `get<T>(key)` | Obtiene valor deserializado del cache |
+| `set<T>(key, value, ttl?)` | Guarda valor serializado con TTL opcional (segundos) |
+| `delete(key)` | Elimina una clave |
+| `deleteByPattern(pattern)` | Elimina claves por patron usando SCAN (no bloqueante) |
 
-## License
+### Estrategia de cache
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+- **FindAll Characters**: Cache-aside con TTL de 600 segundos (10 min)
+- **Create/Update/Delete**: Invalidan todo el cache de characters (`characters:*`)
+
+## Configuracion
+
+### Variables de entorno
+
+| Variable | Requerida | Default | Descripcion |
+|---|---|---|---|
+| `PORT` | Si | - | Puerto de la aplicacion |
+| `DB_HOST` | Si | - | Host de PostgreSQL |
+| `DB_PORT` | No | 5432 | Puerto de PostgreSQL |
+| `DB_USERNAME` | Si | - | Usuario de PostgreSQL |
+| `DB_PASSWORD` | Si | - | Password de PostgreSQL |
+| `DB_NAME` | Si | - | Nombre de la base de datos |
+| `DATABASE_URL` | Si | - | URL completa de conexion PostgreSQL |
+| `API_URL` | Si | - | URL de la API externa de Rick and Morty |
+| `REDIS_HOST` | No | localhost | Host de Redis |
+| `REDIS_PORT` | No | 6379 | Puerto de Redis |
+
+### Archivo `.env` de ejemplo
+
+```env
+PORT=3000
+DB_HOST=localhost
+DB_PORT=5432
+DB_USERNAME=Blossom
+DB_PASSWORD=123456
+DB_NAME=Blossom
+DATABASE_URL="postgresql://Blossom:123456@localhost:5432/Blossom?schema=public"
+API_URL=https://rickandmortyapi.com/api
+REDIS_HOST=localhost
+REDIS_PORT=6379
+```
+
+## Instalacion y ejecucion
+
+### Requisitos previos
+
+- Node.js >= 22
+- pnpm
+- Docker y Docker Compose
+
+### Levantar infraestructura
+
+```bash
+docker compose up -d
+```
+
+Esto levanta PostgreSQL (puerto 5432) y Redis (puerto 6379).
+
+### Instalar dependencias
+
+```bash
+pnpm install
+```
+
+### Generar cliente Prisma
+
+```bash
+pnpm prisma generate
+```
+
+### Ejecutar migraciones
+
+```bash
+pnpm prisma migrate dev
+```
+
+### Iniciar la aplicacion
+
+```bash
+# Desarrollo (watch mode)
+pnpm run start:dev
+
+# Produccion
+pnpm run build
+pnpm run start:prod
+```
+
+### Acceder a la API
+
+Apollo Sandbox disponible en `http://localhost:3000/graphql`.
+
+## Docker
+
+El archivo `docker-compose.yml` define tres servicios:
+
+| Servicio | Imagen | Puerto | Volumen |
+|---|---|---|---|
+| db | postgres:16-alpine | 5432 | postgres_data |
+| redis | redis:7-alpine | 6379 | redis_data |
+| app | Build local | 3000 | - |
+
+```bash
+# Levantar todo
+docker compose up -d
+
+# Solo infraestructura (DB + Redis)
+docker compose up db redis -d
+
+# Ver logs
+docker compose logs -f app
+```
+
+## Scripts disponibles
+
+| Script | Descripcion |
+|---|---|
+| `pnpm run start` | Iniciar la aplicacion |
+| `pnpm run start:dev` | Iniciar en modo desarrollo (watch) |
+| `pnpm run start:debug` | Iniciar en modo debug |
+| `pnpm run build` | Compilar TypeScript |
+| `pnpm run test` | Ejecutar tests unitarios |
+| `pnpm run test:e2e` | Ejecutar tests end-to-end |
+| `pnpm run test:cov` | Ejecutar tests con cobertura |
+| `pnpm run lint` | Ejecutar ESLint |
+| `pnpm run format` | Formatear codigo con Prettier |
