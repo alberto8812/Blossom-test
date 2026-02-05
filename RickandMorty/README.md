@@ -41,10 +41,13 @@ VITE_GRAPHQL_URL=http://localhost:3000/graphql
 ## Scripts
 
 ```bash
-pnpm dev        # Servidor de desarrollo
-pnpm build      # Build de produccion (tsc + vite)
-pnpm preview    # Preview del build
-pnpm lint       # Ejecutar ESLint
+pnpm dev            # Servidor de desarrollo
+pnpm build          # Build de produccion (tsc + vite)
+pnpm preview        # Preview del build
+pnpm lint           # Ejecutar ESLint
+pnpm test           # Ejecutar tests en modo watch
+pnpm test --run     # Ejecutar tests una vez
+pnpm test:coverage  # Tests con cobertura
 ```
 
 ## Estructura del proyecto
@@ -187,3 +190,75 @@ interface CharacterDB {
 **Filter Store** — Gestiona el estado de busqueda y filtros:
 - `specieFilter`, `originFilter`, `characterFilter`, `name`
 - Metodos para actualizar cada filtro y validar antes de aplicar
+
+## Testing
+
+El proyecto usa **Vitest** con **Testing Library**.
+
+### Estructura de tests
+
+```
+src/
+├── shared/presentation/store/favorites/
+│   └── favorites.character.store.test.ts    # Tests del store
+└── modules/chatacters/components/ui/sideMenu/
+    └── SideMenu.test.tsx                     # Tests del componente
+```
+
+### Ejecutar tests
+
+```bash
+pnpm test           # Modo watch
+pnpm test --run     # Una sola ejecucion
+pnpm test:coverage  # Con reporte de cobertura
+```
+
+### Ejemplo de test del store
+
+```typescript
+import { useFavoritesCharacterStore } from './favorites.character.store';
+
+describe('useFavoritesCharacterStore', () => {
+  beforeEach(() => {
+    useFavoritesCharacterStore.setState({ favorites: [], countFavorites: 0 });
+  });
+
+  it('should add a character to favorites', () => {
+    const { addFavoriteAndremoVe } = useFavoritesCharacterStore.getState();
+    addFavoriteAndremoVe(mockCharacter);
+
+    const { favorites } = useFavoritesCharacterStore.getState();
+    expect(favorites).toHaveLength(1);
+  });
+});
+```
+
+## Custom Hooks
+
+### `useFindAll<T>`
+Obtener lista de items con cache.
+```typescript
+const { data, isLoading } = useFindAll<Character>(
+  ["GET_ALL_CHARACTER"],
+  () => getAllCharacters()
+);
+```
+
+### `useFindById<T>`
+Obtener item por ID.
+```typescript
+const { data, isLoading } = useFindById<Character>(
+  ["GET_CHARACTER_BY_ID", id],
+  () => getCharacterById(id),
+  !!id // enabled
+);
+```
+
+### `useSaveData<T>`
+Mutacion con invalidacion automatica del cache.
+```typescript
+const { mutate, isPending } = useSaveData(
+  ["GET_CHARACTER_BY_ID", id],
+  (comment: string) => updateComment({ id, comment })
+);
+```
