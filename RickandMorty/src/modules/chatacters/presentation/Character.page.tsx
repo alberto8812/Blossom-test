@@ -21,10 +21,6 @@ export const CharacterPage = () => {
     (state) => state.addFavoriteAndremoVe,
   );
 
-  const submitComment = () => {
-    // Function to handle comment submission
-  };
-
   if (!id) {
     return (
       <div className="hidden lg:flex items-center justify-center h-full">
@@ -149,7 +145,7 @@ export const CharacterPage = () => {
           </p>
         </div>
         <div className="py-4">
-          <Inputfieled comment={character.comment} />
+          <Inputfieled comment={character.comment} id={character.id} />
         </div>
       </div>
     </div>
