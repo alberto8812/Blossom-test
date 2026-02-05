@@ -44,18 +44,22 @@ export const SideMenu = () => {
   );
 
   const { data: characters, isLoading } = useFindAll<CharacterDB>(
-    ["GET_ALL_CHARACTER", JSON.stringify(characterFilter), JSON.stringify(nameFilter)],
-    () => getAllCharacters({ ...characterFilter, ...nameFilter })
+    [
+      "GET_ALL_CHARACTER",
+      JSON.stringify(characterFilter),
+      JSON.stringify(nameFilter),
+    ],
+    () => getAllCharacters({ ...characterFilter, ...nameFilter }),
   );
 
   const { data: origins, isLoading: isLoadingOrigins } = useFindAll<OriginDB>(
     ["GET_ALL_ORIGIN"],
-    getAllOrigin
+    getAllOrigin,
   );
 
   const { data: genders, isLoading: isLoadingGenders } = useFindAll<SpecieDB>(
     ["GET_ALL_GENDER"],
-    getAllGender
+    getAllGender,
   );
 
   const activeFilterCount = getActiveFilterCount(filters);
@@ -181,8 +185,6 @@ export const SideMenu = () => {
                     origins={origins || []}
                     genders={genders || []}
                     onClose={handleCloseFilter}
-                    onApply={handleApplyFilters}
-                    currentFilters={filters}
                     isMobile={false}
                   />
                 </div>
@@ -195,8 +197,6 @@ export const SideMenu = () => {
             <div className="lg:hidden">
               <ModalFilterSidebar
                 onClose={handleCloseFilter}
-                onApply={handleApplyFilters}
-                currentFilters={filters}
                 isMobile={true}
                 origins={origins || []}
                 genders={genders || []}

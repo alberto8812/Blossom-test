@@ -5,8 +5,6 @@ import { useFilterSharestore } from "../../../../../shared/presentation/store";
 
 interface Props {
   onClose: () => void;
-  onApply: (filters: FilterState) => void;
-  currentFilters: FilterState;
   isMobile: boolean;
   origins: OriginDB[];
   genders: SpecieDB[];
@@ -58,8 +56,6 @@ const PillButton = ({
 
 export const ModalFilterSidebar = ({
   onClose,
-  onApply,
-  currentFilters,
   isMobile,
   origins,
   genders,
