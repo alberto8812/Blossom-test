@@ -40,7 +40,7 @@ const PillButton = ({
 }) => (
   <button
     onClick={onClick}
-    className={`px-6 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap max-w-full truncate ${
       isActive
         ? "text-[var(--accent)]"
         : "border text-gray-600 hover:bg-gray-50"
@@ -50,6 +50,7 @@ const PillButton = ({
         ? { backgroundColor: "var(--accent-light)" }
         : { borderColor: "#e5e7eb" }
     }
+    title={label}
   >
     {label}
   </button>
@@ -90,7 +91,7 @@ export const ModalFilterSidebar = ({
           </h2>
         </div>
 
-        <div className="flex-1 px-5 pt-4 space-y-8">
+        <div className="flex-1 px-5 pt-4 space-y-8 overflow-y-auto">
           <div className="space-y-3">
             <p
               className="text-sm font-medium"
@@ -98,7 +99,7 @@ export const ModalFilterSidebar = ({
             >
               Characters
             </p>
-            <div className="flex gap-3">
+            <div className="flex flex-wrap gap-2">
               {origins.map((origin) => (
                 <PillButton
                   key={origin.id}
@@ -122,7 +123,7 @@ export const ModalFilterSidebar = ({
             >
               Specie
             </p>
-            <div className="flex gap-3">
+            <div className="flex flex-wrap gap-2">
               {genders.map((gen) => (
                 <PillButton
                   key={gen.id}
@@ -169,7 +170,7 @@ export const ModalFilterSidebar = ({
         >
           Character
         </p>
-        <div className="flex gap-3">
+        <div className="flex flex-wrap gap-2">
           {origins.map((origin) => (
             <PillButton
               key={origin.id}
@@ -193,7 +194,7 @@ export const ModalFilterSidebar = ({
         >
           Specie
         </p>
-        <div className="flex gap-3">
+        <div className="flex flex-wrap gap-2">
           {genders.map((gen) => (
             <PillButton
               key={gen.id}
