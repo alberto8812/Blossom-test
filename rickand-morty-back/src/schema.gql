@@ -59,6 +59,12 @@ type CharactersResponseObj {
   data: [CharacterRepositoryModelObj!]!
 }
 
+type CharacterResponseObj {
+  message: String!
+  code: Int!
+  data: CharacterRepositoryModelObj
+}
+
 type GendersResponseObj {
   message: String!
   code: Int!
@@ -73,7 +79,7 @@ type OriginsResponseObj {
 
 type Query {
   get_all_character(name: String, status: String, originId: String, speciesId: String): CharactersResponseObj!
-  character(id: String!): Character!
+  get_one_character(id: String!): CharacterResponseObj!
   searchCharacters(filters: SearchFilterCharacterInput!): [Character!]!
   get_all_gender: GendersResponseObj!
   get_all_origins: OriginsResponseObj!

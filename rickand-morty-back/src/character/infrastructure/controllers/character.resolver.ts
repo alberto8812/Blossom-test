@@ -9,7 +9,7 @@ import { CreateCharacterUseCase } from '../../application/use-cases/create-chara
 import { UpdateCharacterUseCase } from '../../application/use-cases/update-character.use-case';
 import { DeleteCharacterUseCase } from '../../application/use-cases/delete-character.use-case';
 import { SearchCharactersUseCase } from '../../application/use-cases/search-characters.use-case';
-import { CharactersResponseObj } from '../graphql/output/character-response.type';
+import { CharacterResponseObj, CharactersResponseObj } from '../graphql/output/character-response.type';
 import { SearchCharacterArgs } from '../graphql/args/search.characters';
 
 @Resolver(() => Character)
@@ -28,8 +28,8 @@ export class CharacterResolver {
     return this.findAllUseCase.execute(searchCharacterArgs);
   }
 
-  @Query(() => Character, { name: 'character' })
-  findOne(@Args('id') id: string) {
+  @Query(() => CharacterResponseObj, { name: 'get_one_character' })
+  findOne(@Args('id', { type: () => String }) id: string) {
     return this.findByIdUseCase.execute(id);
   }
 
