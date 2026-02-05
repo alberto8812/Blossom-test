@@ -13,18 +13,14 @@ export class UpdateCharacterUseCase {
     private readonly cacheService: RedisCacheService,
   ) { }
 
-  async execute(input: UpdateCharacterInput): Promise<IResponse<Character>> {
-    const { id, ...data } = input;
+  async execute(input: UpdateCharacterInput): Promise<Character> {
+    const { id, comment } = input;
     const existing = await this.characterRepository.findById(id);
-    if (!existing) {
-      return {
-        message: `Character with id ${id} not found`,
-        code: 404,
-        data: [],
-      }
+    if (!existing.data) {
+      throw new NotFoundException(`Character with id ${id} not found`);
     }
-    const character = await this.characterRepository.update(id, data);
+    const character = await this.characterRepository.update(id, { comment });
     await this.cacheService.deleteByPattern(CHARACTER_CACHE_KEYS.PATTERN_ALL);
-    return character;
+    return character.data as Character;
   }
 }

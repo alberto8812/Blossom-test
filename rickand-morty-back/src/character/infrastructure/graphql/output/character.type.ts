@@ -14,8 +14,8 @@ export class CharacterRepositoryModelObj {
     @Field()
     status: string;
 
-    @Field()
-    img: string;
+    @Field(() => String, { nullable: true })
+    img: string | null;
 
     @Field()
     originId: string;
