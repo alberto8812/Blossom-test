@@ -4,7 +4,7 @@ import { SearchFilterCharacter } from '../../application/interfaces/search-filte
 export const CHARACTER_REPOSITORY = 'CHARACTER_REPOSITORY';
 
 export interface ICharacterRepository {
-  findAll(): Promise<IResponse<Character[]>>;
+  findAll(filter: SearchFilterCharacter): Promise<IResponse<Character[]>>;
   findById(id: string): Promise<IResponse<Character | null>>;
   create(data: Omit<Character, 'id' | 'createdAt' | 'updatedAt' | 'deletedAt' | 'origin' | 'species'>): Promise<IResponse<Character>>;
   update(id: string, data: Partial<Omit<Character, 'id' | 'createdAt' | 'updatedAt' | 'deletedAt' | 'origin' | 'species'>>): Promise<IResponse<Character>>;

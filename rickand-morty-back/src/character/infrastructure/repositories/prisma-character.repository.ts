@@ -13,9 +13,25 @@ const includeRelations = {
 export class PrismaCharacterRepository implements ICharacterRepository {
   constructor(private readonly prisma: PrismaService) { }
 
-  async findAll(): Promise<IResponse<Character[]>> {
+  async findAll(filter: SearchFilterCharacter): Promise<IResponse<Character[]>> {
+    const where: Record<string, unknown> = { deletedAt: null };
+
+    const conditions = {
+      name: () => where.name = { contains: filter.name, mode: 'insensitive' },
+      status: () => where.status = { contains: filter.status, mode: 'insensitive' },
+      originId: () => where.originId = filter.originId,
+      speciesId: () => where.speciesId = filter.speciesId,
+    }
+
+    const conditionKeys = Object.keys(filter) as (keyof typeof conditions)[];
+
+    conditionKeys.forEach((key) => {
+      if (filter[key]) {
+        conditions[key]()
+      }
+    })
     const data = await this.prisma.character.findMany({
-      where: { deletedAt: null },
+      where,
       include: includeRelations,
     });
 

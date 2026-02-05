@@ -17,6 +17,9 @@ export const getAllCharacters = async (filter: CharacterFilter): Promise<Charact
     const { data } = await graphqlClient.query<ResponseCharacter>({
       query: GET_ALL_CHARACTER,
       fetchPolicy: "network-only",
+      variables: {
+        ...filter,
+      },
     });
     const { get_all_character } = data as ResponseCharacter;
     const transformedData = get_all_character.data.map(characterMappers);
