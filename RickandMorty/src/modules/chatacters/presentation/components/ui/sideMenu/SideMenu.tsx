@@ -1,68 +1,35 @@
-import { NavLink, useNavigate, useParams } from "react-router-dom";
-import { useFindAll } from "../../../../../shared/presentation/hooks/use-SelectPetition-module";
-import { getAllCharacters } from "../../../api/get-all-characters";
-import { useState } from "react";
+import { NavLink } from "react-router-dom";
 
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { IoIosCloseCircleOutline } from "react-icons/io";
 import { IoArrowBack } from "react-icons/io5";
-import { SearchSideMenu } from "../../../../../components/SearchSideMenu";
+import { SearchSideMenu } from "../../../../../../components/SearchSideMenu";
 import { Squeleton } from "../Squeleton";
-import { Loading } from "../../../../../components/Loading";
-import { Accordion } from "../../../../../components/Accordion";
-import {
-  useFavoritesCharacterStore,
-  useFilterSharestore,
-} from "../../../../../shared/presentation/store";
-import type { CharacterDB } from "../../../domain/entity/character.interface.db";
+import { Loading } from "../../../../../../components/Loading";
+import { Accordion } from "../../../../../../components/Accordion";
+import type { CharacterDB } from "../../../../domain/entity/character.interface.db";
 import { ProfileCard } from "../cards/ProfileCard";
-import {
-  ModalFilterSidebar,
-  defaultFilters,
-  getActiveFilterCount,
-  type FilterState,
-} from "./ModalFilterSidebar";
-import { getAllOrigin } from "../../../../origin/api/get-all-origin";
-import { getAllGender } from "../../../../gender/api/get-all-gender";
-import type { OriginDB } from "../../../../origin/domain/entity/origin.interface";
-import type { SpecieDB } from "../../../../gender/domain/entity/specie.interface";
+import { ModalFilterSidebar, defaultFilters } from "./ModalFilterSidebar";
+import { useSideMenuOperation } from "../../../hook/useSideMenuOperation";
 
 export const SideMenu = () => {
-  const navigate = useNavigate();
-  const { id: activeId } = useParams();
-  const [isOpen, setIsOpen] = useState(false);
-  const [isOpenFilter, setIsOpenFilter] = useState(false);
-  const [filters, setFilters] = useState<FilterState>(defaultFilters);
-  const [isAdvancedSearch, setIsAdvancedSearch] = useState(false);
-  const nameFilter = useFilterSharestore((state) => state.name);
-  const characterFilter = useFilterSharestore((state) => state.characterFilter);
-  const favoritesCharacter = useFavoritesCharacterStore(
-    (state) => state.favorites,
-  );
-  const favoritesCountCharacter = useFavoritesCharacterStore(
-    (state) => state.countFavorites,
-  );
-
-  const { data: characters, isLoading } = useFindAll<CharacterDB>(
-    [
-      "GET_ALL_CHARACTER",
-      JSON.stringify(characterFilter),
-      JSON.stringify(nameFilter),
-    ],
-    () => getAllCharacters({ ...characterFilter, ...nameFilter }),
-  );
-
-  const { data: origins, isLoading: isLoadingOrigins } = useFindAll<OriginDB>(
-    ["GET_ALL_ORIGIN"],
-    getAllOrigin,
-  );
-
-  const { data: genders, isLoading: isLoadingGenders } = useFindAll<SpecieDB>(
-    ["GET_ALL_GENDER"],
-    getAllGender,
-  );
-
-  const activeFilterCount = getActiveFilterCount(filters);
+  const {
+    activeId,
+    isOpen,
+    setIsOpen,
+    isOpenFilter,
+    setIsOpenFilter,
+    activeFilterCount,
+    setFilters,
+    isAdvancedSearch,
+    setIsAdvancedSearch,
+    favoritesCharacter,
+    favoritesCountCharacter,
+    characters,
+    isLoading,
+    origins,
+    genders,
+  } = useSideMenuOperation();
 
   if (isLoading) {
     return <Loading text="Loading characters" />;
@@ -78,14 +45,6 @@ export const SideMenu = () => {
 
   const handleCloseFilter = () => {
     setIsOpenFilter(false);
-  };
-
-  const handleApplyFilters = (newFilters: FilterState) => {
-    setFilters(newFilters);
-    const count = getActiveFilterCount(newFilters);
-    if (count > 0) {
-      setIsAdvancedSearch(true);
-    }
   };
 
   const handleDoneAdvancedSearch = () => {

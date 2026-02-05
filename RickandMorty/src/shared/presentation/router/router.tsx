@@ -3,7 +3,7 @@ import { PageError } from "../handkeErrors/PageError";
 import { Root } from "./Root";
 import { DashboardLayout } from "../layouts/DashBoardLayout";
 import { CharacterPage } from "../../../modules/chatacters/presentation/Character.page";
-import { DashBoardCharactersLayout } from "../../../modules/chatacters/components/ui/layouts/DashBoardCharactersLayout";
+import { DashBoardCharactersLayout } from "../../../modules/chatacters/presentation/components/ui/layouts/DashBoardCharactersLayout";
 import BlossomHero from "../../../modules/chatacters/presentation/intro.page";
 
 export const router = createBrowserRouter([

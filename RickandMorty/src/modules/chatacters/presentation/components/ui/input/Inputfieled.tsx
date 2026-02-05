@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useSaveData } from "../../../../../shared/presentation/hooks/use-SelectPetition-module";
-import { updateCharacterComment } from "../../../api/update-character";
+import { useSaveData } from "../../../../../../shared/presentation/hooks/use-SelectPetition-module";
+import { updateCharacterComment } from "../../../../api/update-character";
 
 interface Props {
   comment?: string;

@@ -1,6 +1,6 @@
 import { FaRegHeart } from "react-icons/fa6";
 import { FaHeart } from "react-icons/fa";
-import { useFavoritesCharacterStore } from "../../../../../shared/presentation/store";
+import { useFavoritesCharacterStore } from "../../../../../../shared/presentation/store";
 
 interface Props {
   name?: string;
@@ -74,11 +74,7 @@ export const ProfileCard = ({
             : "text-gray-300 hover:text-gray-400"
         } hover:bg-gray-100`}
       >
-        {favorite ? (
-          <FaHeart size={16} />
-        ) : (
-          <FaRegHeart size={16} />
-        )}
+        {favorite ? <FaHeart size={16} /> : <FaRegHeart size={16} />}
       </button>
     </div>
   );

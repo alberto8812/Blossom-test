@@ -1,7 +1,7 @@
 import { IoArrowBack } from "react-icons/io5";
-import type { OriginDB } from "../../../../origin/domain/entity/origin.interface";
-import type { SpecieDB } from "../../../../gender/domain/entity/specie.interface";
-import { useFilterSharestore } from "../../../../../shared/presentation/store";
+import type { OriginDB } from "../../../../../origin/domain/entity/origin.interface";
+import type { SpecieDB } from "../../../../../gender/domain/entity/specie.interface";
+import { useFilterSharestore } from "../../../../../../shared/presentation/store";
 
 interface Props {
   onClose: () => void;

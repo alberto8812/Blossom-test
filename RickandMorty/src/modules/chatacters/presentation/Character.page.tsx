@@ -5,7 +5,7 @@ import { useFindById } from "../../../shared/presentation/hooks/use-SelectPetiti
 import { useFavoritesCharacterStore } from "../../../shared/presentation/store";
 import type { CharacterDB } from "../domain/entity/character.interface.db";
 import { getAllCharactersById } from "../api/get-characters-by-id";
-import { Inputfieled } from "../components/ui/input/Inputfieled";
+import { Inputfieled } from "./components/ui/input/Inputfieled";
 import { Loading } from "../../../components/Loading";
 
 export const CharacterPage = () => {
