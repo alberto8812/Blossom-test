@@ -1,5 +1,3 @@
-import React from "react";
-
 export const Squeleton = () => {
   return (
     <div role="status" className="max-w-sm animate-pulse h-screen">
