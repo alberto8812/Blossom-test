@@ -39,3 +39,18 @@ export const useSaveData = <T>(
     return mutation;
 };
 
+export const useDeleteData = <T>(
+    queryKey: unknown[],
+    fetcher: (id: string | number) => Promise<void>
+) => {
+    const queryClient = useQueryClient();
+    const mutation = useMutation({
+        mutationFn: fetcher,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey });
+        },
+    });
+
+    return mutation;
+}
+
