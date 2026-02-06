@@ -1,20 +1,29 @@
+import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { FaHeart, FaRegHeart } from "react-icons/fa";
+import { FaHeart, FaRegHeart, FaTrash } from "react-icons/fa";
 import { IoArrowBack } from "react-icons/io5";
-import { useFindById } from "../../../shared/presentation/hooks/use-SelectPetition-module";
+import { useFindById, useDeleteData } from "../../../shared/presentation/hooks/use-SelectPetition-module";
 import { useFavoritesCharacterStore } from "../../../shared/presentation/store";
 import type { CharacterDB } from "../domain/entity/character.interface.db";
 import { getAllCharactersById } from "../api/get-characters-by-id";
+import { deleteCharacter } from "../api/delete-character";
 import { Inputfieled } from "./components/ui/input/Inputfieled";
 import { Loading } from "../../../components/Loading";
+import { ConfirmDeleteModal } from "../../../components/ConfirmDeleteModal";
 
 export const CharacterPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const { data: character, isLoading } = useFindById<CharacterDB>(
     ["GET_CHARACTER_BY_ID", id],
     () => getAllCharactersById(id!),
     !!id,
+  );
+
+  const deleteMutation = useDeleteData(
+    ["GET_ALL_CHARACTERS"],
+    deleteCharacter,
   );
 
   const favorites = useFavoritesCharacterStore((state) => state.favorites);
@@ -59,6 +68,16 @@ export const CharacterPage = () => {
     });
   };
 
+  const handleDelete = async () => {
+    try {
+      await deleteMutation.mutateAsync(character.id);
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("Error deleting character:", error);
+      setShowDeleteModal(false);
+    }
+  };
+
   return (
     <div className=" mx-auto py-6 lg:py-8 px-5 lg:px-6">
       {/* Mobile back button */}
@@ -88,12 +107,22 @@ export const CharacterPage = () => {
         </div>
       </div>
 
-      <h1
-        className="text-2xl font-bold mt-4 mb-8"
-        style={{ color: "var(--text-primary)" }}
-      >
-        {character.name}
-      </h1>
+      <div className="flex items-center justify-between mt-4 mb-8">
+        <h1
+          className="text-2xl font-bold"
+          style={{ color: "var(--text-primary)" }}
+        >
+          {character.name}
+        </h1>
+        <button
+          onClick={() => setShowDeleteModal(true)}
+          disabled={deleteMutation.isPending}
+          className="p-2 text-gray-400 hover:text-red-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          title="Delete character"
+        >
+          <FaTrash size={18} />
+        </button>
+      </div>
 
       <div className="space-y-0">
         <div
@@ -145,6 +174,16 @@ export const CharacterPage = () => {
           />
         </div>
       </div>
+
+      <ConfirmDeleteModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={handleDelete}
+        title="Delete Character"
+        message="Are you sure you want to delete this character? This action cannot be undone."
+        itemName={character.name}
+        isLoading={deleteMutation.isPending}
+      />
     </div>
   );
 };
