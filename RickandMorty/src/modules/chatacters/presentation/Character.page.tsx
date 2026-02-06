@@ -22,7 +22,7 @@ export const CharacterPage = () => {
   );
 
   const deleteMutation = useDeleteData(
-    ["GET_ALL_CHARACTERS"],
+    ["GET_ALL_CHARACTER"],
     deleteCharacter,
   );
 

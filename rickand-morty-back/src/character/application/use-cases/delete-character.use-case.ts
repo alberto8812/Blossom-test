@@ -12,13 +12,13 @@ export class DeleteCharacterUseCase {
     private readonly cacheService: RedisCacheService,
   ) { }
 
-  async execute(id: string): Promise<IResponse<Character>> {
+  async execute(id: string): Promise<Character> {
     const existing = await this.characterRepository.findById(id);
-    if (!existing) {
+    if (!existing.data) {
       throw new NotFoundException(`Character with id ${id} not found`);
     }
     const character = await this.characterRepository.softDelete(id);
     await this.cacheService.deleteByPattern(CHARACTER_CACHE_KEYS.PATTERN_ALL);
-    return character;
+    return character.data as Character;
   }
 }
